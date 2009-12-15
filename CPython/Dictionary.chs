@@ -110,14 +110,14 @@ import CPython.Internal hiding (new)
 -- next
 
 {# fun PyDict_Merge as merge
-	`Object b' =>
+	`Mapping b' =>
 	{ withObject* `Dictionary'
 	, withObject* `b'
 	, `Bool'
 	} -> `()' checkStatusCode* #}
 
 {# fun PyDict_Update as update
-	`Object b' =>
+	`Mapping b' =>
 	{ withObject* `Dictionary'
 	, withObject* `b'
 	} -> `()' checkStatusCode* #}

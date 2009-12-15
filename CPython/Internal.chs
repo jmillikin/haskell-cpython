@@ -45,6 +45,10 @@ module CPython.Internal
 	, exceptionIf
 	, checkStatusCode
 	, checkBoolReturn
+	
+	-- * Mappings
+	, Mapping (..)
+	, SomeMapping (..)
 	) where
 import Control.Applicative ((<$>))
 import qualified Control.Exception as E
@@ -151,3 +155,15 @@ checkBoolReturn :: CInt -> IO Bool
 checkBoolReturn x = do
 	exceptionIf $ x == -1
 	return $ x /= 0
+
+data SomeMapping = forall a. (Mapping a) => SomeMapping (ForeignPtr a)
+
+class Object a => Mapping a where
+	toMapping :: a -> SomeMapping
+
+instance Object SomeMapping where
+	toObject (SomeMapping x) = SomeObject x
+	fromForeignPtr = SomeMapping
+
+instance Mapping SomeMapping where
+	toMapping = id
