@@ -20,6 +20,7 @@ PyTypeObject *hscpython_PyType_Type ();
 PyTypeObject *hscpython_PyTuple_Type ();
 PyTypeObject *hscpython_PyLong_Type ();
 PyTypeObject *hscpython_PyFloat_Type ();
+PyTypeObject *hscpython_PyComplex_Type ();
 PyTypeObject *hscpython_PyUnicode_Type ();
 
 /* Unicode */

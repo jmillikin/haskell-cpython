@@ -43,6 +43,9 @@ PyTypeObject *hscpython_PyLong_Type ()
 PyTypeObject *hscpython_PyFloat_Type ()
 { return &PyFloat_Type; }
 
+PyTypeObject *hscpython_PyComplex_Type ()
+{ return &PyComplex_Type; }
+
 PyTypeObject *hscpython_PyUnicode_Type ()
 { return &PyUnicode_Type; }
 

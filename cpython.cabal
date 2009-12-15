@@ -24,6 +24,7 @@ library
   exposed-modules:
     CPython
     CPython.Bytes
+    CPython.Complex
     CPython.Dictionary
     CPython.Exception
     CPython.Float
