@@ -20,6 +20,11 @@ PyTypeObject *hscpython_PyTuple_Type ();
 int hscpython_PyTuple_Check (PyObject *);
 int hscpython_PyTuple_CheckExact (PyObject *);
 
+/* Long */
+PyTypeObject *hscpython_PyLong_Type ();
+int hscpython_PyLong_Check (PyObject *);
+int hscpython_PyLong_CheckExact (PyObject *);
+
 /* Type */
 PyTypeObject *hscpython_PyType_Type ();
 int hscpython_PyType_Check (PyObject *);
