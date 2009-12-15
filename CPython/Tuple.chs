@@ -13,7 +13,70 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
+{-# LANGUAGE ForeignFunctionInterface #-}
 module CPython.Tuple
 	( Tuple
+	, tupleType
+	, check
+	, checkExact
+	, new
+	, pack
+	, size
+	, getItem
+	, getSlice
+	, setItem
 	) where
-import CPython.Internal
+import CPython.Internal hiding (new)
+
+#include <Python.h>
+#include <hscpython-shim.h>
+
+{# fun hscpython_PyTuple_Type as tupleType
+	{} -> `Type' peekStaticObject* #}
+
+{# fun hscpython_PyTuple_Check as check
+	`ObjectClass self ' =>
+	{ withObject* `self'
+	} -> `Bool' #}
+
+{# fun hscpython_PyTuple_CheckExact as checkExact
+	`ObjectClass self ' =>
+	{ withObject* `self'
+	} -> `Bool' #}
+
+{# fun PyTuple_New as new
+	{ fromIntegral `Integer'
+	} -> `Tuple' stealObject* #}
+
+pack :: [Object] -> IO Tuple
+pack xs = do
+	tuple <- new . toInteger $ length xs
+	setItems tuple 0 xs
+	return tuple
+
+setItems :: Tuple -> Integer -> [Object] -> IO ()
+setItems _ _ [] = return ()
+setItems t idx (x:xs) = setItem t idx x >> setItems t idx xs
+
+{# fun PyTuple_Size as size
+	{ withObject* `Tuple'
+	} -> `Integer' toInteger #}
+
+{# fun PyTuple_GetItem as getItem
+	{ withObject* `Tuple'
+	, fromIntegral `Integer'
+	} -> `Object' peekObject* #}
+
+{# fun PyTuple_GetSlice as getSlice
+	{ withObject* `Tuple'
+	, fromIntegral `Integer'
+	, fromIntegral `Integer'
+	} -> `Tuple' stealObject* #}
+
+setItem :: ObjectClass o => Tuple -> Integer -> o -> IO ()
+setItem self index x =
+	withObject self $ \selfPtr ->
+	withObject x $ \xPtr -> do
+	incref xPtr
+	cRes <- {# call PyTuple_SetItem as ^ #} selfPtr (fromIntegral index) xPtr
+	exceptionIf $ cRes /= 0

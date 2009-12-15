@@ -15,6 +15,11 @@ enum HSCPythonComparisonEnum
 , HSCPYTHON_GE = Py_GE
 };
 
+/* Tuple */
+PyTypeObject *hscpython_PyTuple_Type ();
+int hscpython_PyTuple_Check (PyObject *);
+int hscpython_PyTuple_CheckExact (PyObject *);
+
 /* Type */
 PyTypeObject *hscpython_PyType_Type ();
 int hscpython_PyType_Check (PyObject *);
