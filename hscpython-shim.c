@@ -40,6 +40,9 @@ PyTypeObject *hscpython_PyTuple_Type ()
 PyTypeObject *hscpython_PyList_Type ()
 { return &PyList_Type; }
 
+PyTypeObject *hscpython_PyDict_Type ()
+{ return &PyDict_Type; }
+
 PyTypeObject *hscpython_PyLong_Type ()
 { return &PyLong_Type; }
 
