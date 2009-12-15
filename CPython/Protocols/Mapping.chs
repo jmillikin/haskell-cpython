@@ -15,7 +15,7 @@
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE ExistentialQuantification #-}
-module CPython.Mapping
+module CPython.Protocols.Mapping
 	( Mapping (..)
 	, SomeMapping
 	, castToMapping
@@ -26,7 +26,7 @@ module CPython.Mapping
 	, items
 	) where
 import CPython.Internal
-import CPython.Dictionary (Dictionary)
+import CPython.Types.Dictionary (Dictionary)
 
 #include <Python.h>
 #include <hscpython-shim.h>

@@ -14,20 +14,30 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-module CPython.Type
-	( Type
-	, typeType
-	, isSubtype
+module CPython.Types.Float
+	( Float
+	, floatType
+	, toDouble
+	, fromDouble
 	) where
+import Prelude hiding (Float)
 import CPython.Internal
 
 #include <Python.h>
 #include <hscpython-shim.h>
 
-{# fun pure hscpython_PyType_Type as typeType
+newtype Float = Float (ForeignPtr Float)
+instance Object Float where
+	toObject (Float x) = SomeObject x
+	fromForeignPtr = Float
+
+{# fun pure hscpython_PyFloat_Type as floatType
 	{} -> `Type' peekStaticObject* #}
 
-{# fun PyType_IsSubtype as isSubtype
-	{ withObject* `Type'
-	, withObject* `Type'
-	} -> `Bool' #}
+{# fun PyFloat_AsDouble as toDouble
+	{ withObject* `Float'
+	} -> `Double' realToFrac #}
+
+{# fun PyFloat_FromDouble as fromDouble
+	{ realToFrac `Double'
+	} -> `Float' stealObject* #}

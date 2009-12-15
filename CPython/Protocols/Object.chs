@@ -14,7 +14,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-module CPython.Object
+module CPython.Protocols.Object
 	( Object
 	, SomeObject
 	, toObject
@@ -48,8 +48,8 @@ module CPython.Object
 	) where
 import Prelude hiding (Ordering (..), compare, not)
 import CPython.Internal
-import qualified CPython.Unicode as U
-import qualified CPython.Bytes as B
+import qualified CPython.Types.Unicode as U
+import qualified CPython.Types.Bytes as B
 
 #include <Python.h>
 #include <hscpython-shim.h>

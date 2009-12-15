@@ -15,7 +15,7 @@
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE ExistentialQuantification #-}
-module CPython.Sequence
+module CPython.Protocols.Sequence
 	( Sequence (..)
 	, SomeSequence
 	, castToSequence
@@ -39,9 +39,9 @@ module CPython.Sequence
 	) where
 import Prelude hiding (repeat)
 import CPython.Internal
-import CPython.ByteArray (ByteArray)
-import CPython.Bytes (Bytes)
-import CPython.Unicode (Unicode)
+import CPython.Types.ByteArray (ByteArray)
+import CPython.Types.Bytes (Bytes)
+import CPython.Types.Unicode (Unicode)
 
 #include <Python.h>
 #include <hscpython-shim.h>

@@ -14,30 +14,34 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-module CPython.Float
-	( Float
-	, floatType
-	, toDouble
-	, fromDouble
+module CPython.Types.Complex
+	( Complex
+	, complexType
+	, toComplex
+	, fromComplex
 	) where
-import Prelude hiding (Float)
+import qualified Data.Complex as C
 import CPython.Internal
 
 #include <Python.h>
 #include <hscpython-shim.h>
 
-newtype Float = Float (ForeignPtr Float)
-instance Object Float where
-	toObject (Float x) = SomeObject x
-	fromForeignPtr = Float
+newtype Complex = Complex (ForeignPtr Complex)
+instance Object Complex where
+	toObject (Complex x) = SomeObject x
+	fromForeignPtr = Complex
 
-{# fun pure hscpython_PyFloat_Type as floatType
+{# fun pure hscpython_PyComplex_Type as complexType
 	{} -> `Type' peekStaticObject* #}
 
-{# fun PyFloat_AsDouble as toDouble
-	{ withObject* `Float'
-	} -> `Double' realToFrac #}
+toComplex :: Complex -> IO (C.Complex Double)
+toComplex py = withObject py $ \pyPtr -> do
+	real <- {# call PyComplex_RealAsDouble as ^ #} pyPtr
+	imag <- {# call PyComplex_ImagAsDouble as ^ #} pyPtr
+	return $ realToFrac real C.:+ realToFrac imag
 
-{# fun PyFloat_FromDouble as fromDouble
-	{ realToFrac `Double'
-	} -> `Float' stealObject* #}
+fromComplex :: C.Complex Double -> IO Complex
+fromComplex x = raw >>= stealObject where
+	real = realToFrac $ C.realPart x
+	imag = realToFrac $ C.imagPart x
+	raw = {# call PyComplex_FromDoubles as ^ #} real imag

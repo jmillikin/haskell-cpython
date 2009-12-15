@@ -14,34 +14,20 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-module CPython.Complex
-	( Complex
-	, complexType
-	, toComplex
-	, fromComplex
+module CPython.Types.Type
+	( Type
+	, typeType
+	, isSubtype
 	) where
-import qualified Data.Complex as C
 import CPython.Internal
 
 #include <Python.h>
 #include <hscpython-shim.h>
 
-newtype Complex = Complex (ForeignPtr Complex)
-instance Object Complex where
-	toObject (Complex x) = SomeObject x
-	fromForeignPtr = Complex
-
-{# fun pure hscpython_PyComplex_Type as complexType
+{# fun pure hscpython_PyType_Type as typeType
 	{} -> `Type' peekStaticObject* #}
 
-toComplex :: Complex -> IO (C.Complex Double)
-toComplex py = withObject py $ \pyPtr -> do
-	real <- {# call PyComplex_RealAsDouble as ^ #} pyPtr
-	imag <- {# call PyComplex_ImagAsDouble as ^ #} pyPtr
-	return $ realToFrac real C.:+ realToFrac imag
-
-fromComplex :: C.Complex Double -> IO Complex
-fromComplex x = raw >>= stealObject where
-	real = realToFrac $ C.realPart x
-	imag = realToFrac $ C.imagPart x
-	raw = {# call PyComplex_FromDoubles as ^ #} real imag
+{# fun PyType_IsSubtype as isSubtype
+	{ withObject* `Type'
+	, withObject* `Type'
+	} -> `Bool' #}

@@ -14,7 +14,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-module CPython.Dictionary
+module CPython.Types.Dictionary
 	( Dictionary
 	, dictionaryType
 	, new

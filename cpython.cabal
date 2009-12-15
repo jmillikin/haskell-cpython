@@ -23,22 +23,22 @@ library
 
   exposed-modules:
     CPython
-    CPython.ByteArray
-    CPython.Bytes
-    CPython.Complex
+    CPython.Types.ByteArray
+    CPython.Types.Bytes
+    CPython.Types.Complex
+    CPython.Types.Dictionary
+    CPython.Types.Float
+    CPython.Types.Integer
+    CPython.Types.List
+    CPython.Types.Tuple
+    CPython.Types.Type
+    CPython.Types.Unicode
+    CPython.Protocols.Mapping
+    CPython.Protocols.Number
+    CPython.Protocols.Object
+    CPython.Protocols.Sequence
     CPython.Constants
-    CPython.Dictionary
     CPython.Exception
-    CPython.Float
-    CPython.Integer
-    CPython.List
-    CPython.Mapping
-    CPython.Number
-    CPython.Object
-    CPython.Sequence
-    CPython.Tuple
-    CPython.Type
-    CPython.Unicode
 
   other-modules:
     CPython.Internal

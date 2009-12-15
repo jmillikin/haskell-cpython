@@ -14,7 +14,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-module CPython.Integer
+module CPython.Types.Integer
 	( Integer
 	, integerType
 	, toInteger
@@ -23,8 +23,8 @@ module CPython.Integer
 import Prelude hiding (Integer, toInteger, fromInteger)
 import qualified Prelude as Prelude
 import CPython.Internal
-import qualified CPython.Unicode as U
-import qualified CPython.Object as O
+import qualified CPython.Types.Unicode as U
+import qualified CPython.Protocols.Object as O
 
 #include <Python.h>
 #include <hscpython-shim.h>
