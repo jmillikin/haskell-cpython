@@ -18,6 +18,7 @@ enum HSCPythonComparisonEnum
 /* Types */
 PyTypeObject *hscpython_PyType_Type ();
 PyTypeObject *hscpython_PyTuple_Type ();
+PyTypeObject *hscpython_PyList_Type ();
 PyTypeObject *hscpython_PyLong_Type ();
 PyTypeObject *hscpython_PyFloat_Type ();
 PyTypeObject *hscpython_PyComplex_Type ();
