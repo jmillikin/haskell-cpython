@@ -27,8 +27,8 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype Complex = Complex (ForeignPtr Complex)
-instance ObjectClass Complex where
-	toObject (Complex x) = Object x
+instance Object Complex where
+	toObject (Complex x) = SomeObject x
 	fromForeignPtr = Complex
 
 {# fun pure hscpython_PyComplex_Type as complexType

@@ -31,8 +31,8 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype Bytes = Bytes (ForeignPtr Bytes)
-instance ObjectClass Bytes where
-	toObject (Bytes x) = Object x
+instance Object Bytes where
+	toObject (Bytes x) = SomeObject x
 	fromForeignPtr = Bytes
 
 {# fun pure hscpython_PyBytes_Type as bytesType
@@ -56,7 +56,7 @@ fromByteString bytes = let
 	   stealObject =<< mkBytes cstr (fromIntegral len)
 
 {# fun PyBytes_FromObject as fromObject
-	`ObjectClass self ' =>
+	`Object self ' =>
 	{ withObject* `self'
 	} -> `Bytes' stealObject* #}
 

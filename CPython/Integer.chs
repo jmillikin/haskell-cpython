@@ -30,8 +30,8 @@ import qualified CPython.Object as O
 #include <hscpython-shim.h>
 
 newtype Integer = Integer (ForeignPtr Integer)
-instance ObjectClass Integer where
-	toObject (Integer x) = Object x
+instance Object Integer where
+	toObject (Integer x) = SomeObject x
 	fromForeignPtr = Integer
 
 {# fun pure hscpython_PyLong_Type as integerType

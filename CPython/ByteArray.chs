@@ -32,8 +32,8 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype ByteArray = ByteArray (ForeignPtr ByteArray)
-instance ObjectClass ByteArray where
-	toObject (ByteArray x) = Object x
+instance Object ByteArray where
+	toObject (ByteArray x) = SomeObject x
 	fromForeignPtr = ByteArray
 
 {# fun pure hscpython_PyByteArray_Type as byteArrayType
@@ -53,7 +53,7 @@ fromByteString bytes = let
 	   stealObject =<< mkByteArray cstr (fromIntegral len)
 
 {# fun PyByteArray_FromObject as fromObject
-	`ObjectClass self ' =>
+	`Object self ' =>
 	{ withObject* `self'
 	} -> `ByteArray' stealObject* #}
 

@@ -51,7 +51,7 @@ import CPython.Internal hiding (new)
 	} -> `()' id #}
 
 {# fun PyDict_Contains as contains
-	`ObjectClass key' =>
+	`Object key' =>
 	{ withObject* `Dictionary'
 	, withObject* `key'
 	} -> `Bool' checkBoolReturn* #}
@@ -61,21 +61,21 @@ import CPython.Internal hiding (new)
 	} -> `Dictionary' stealObject* #}
 
 {# fun PyDict_GetItem as getItem
-	`ObjectClass key' =>
+	`Object key' =>
 	{ withObject* `Dictionary'
 	, withObject* `key'
-	} -> `Object' peekObject* #}
+	} -> `SomeObject' peekObject* #}
 
 {# fun PyDict_GetItemWithError as getItemWithError
-	`ObjectClass key' =>
+	`Object key' =>
 	{ withObject* `Dictionary'
 	, withObject* `key'
-	} -> `Object' peekObject* #}
+	} -> `SomeObject' peekObject* #}
 
 -- getItemString
 
 {# fun PyDict_SetItem as setItem
-	`(ObjectClass key, ObjectClass value)' =>
+	`(Object key, Object value)' =>
 	{ withObject* `Dictionary'
 	, withObject* `key'
 	, withObject* `value'
@@ -84,7 +84,7 @@ import CPython.Internal hiding (new)
 -- setItemString
 
 {# fun PyDict_DelItem as deleteItem
-	`ObjectClass key' =>
+	`Object key' =>
 	{ withObject* `Dictionary'
 	, withObject* `key'
 	} -> `()' checkStatusCode* #}
@@ -110,20 +110,20 @@ import CPython.Internal hiding (new)
 -- next
 
 {# fun PyDict_Merge as merge
-	`ObjectClass b' =>
+	`Object b' =>
 	{ withObject* `Dictionary'
 	, withObject* `b'
 	, `Bool'
 	} -> `()' checkStatusCode* #}
 
 {# fun PyDict_Update as update
-	`ObjectClass b' =>
+	`Object b' =>
 	{ withObject* `Dictionary'
 	, withObject* `b'
 	} -> `()' checkStatusCode* #}
 
 {# fun PyDict_MergeFromSeq2 as mergeFromSeq2
-	`ObjectClass seq2' =>
+	`Object seq2' =>
 	{ withObject* `Dictionary'
 	, withObject* `seq2'
 	, `Bool'

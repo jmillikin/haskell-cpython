@@ -29,8 +29,8 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype Unicode = Unicode (ForeignPtr Unicode)
-instance ObjectClass Unicode where
-	toObject (Unicode x) = Object x
+instance Object Unicode where
+	toObject (Unicode x) = SomeObject x
 	fromForeignPtr = Unicode
 
 {# fun pure hscpython_PyUnicode_Type as unicodeType
@@ -66,7 +66,7 @@ fromString str = withBuffer fromUnicode >>= stealObject where
 	fromUnicode = {# call hscpython_PyUnicode_FromUnicode as fromUnicode' #}
 
 {# fun hscpython_PyUnicode_FromObject as fromObject
-	`ObjectClass self ' =>
+	`Object self ' =>
 	{ withObject* `self'
 	} -> `Unicode' stealObject* #}
 

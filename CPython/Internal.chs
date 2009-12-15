@@ -25,14 +25,14 @@ module CPython.Internal
 	, cFromBool
 	
 	-- * Fundamental types
-	, Object (..)
+	, SomeObject (..)
 	, Type (..)
 	, Dictionary (..)
 	, List (..)
 	, Tuple (..)
 	
 	-- * Objects
-	, ObjectClass (..)
+	, Object (..)
 	, withObject
 	, peekObject
 	, peekStaticObject
@@ -61,52 +61,52 @@ cToBool = (/= 0)
 cFromBool :: Bool -> CInt
 cFromBool x = if x then 1 else 0
 
-data Object = forall a. (ObjectClass a) => Object (ForeignPtr a)
+data SomeObject = forall a. (Object a) => SomeObject (ForeignPtr a)
 
-class ObjectClass a where
-	toObject :: a -> Object
+class Object a where
+	toObject :: a -> SomeObject
 	fromForeignPtr :: ForeignPtr a -> a
 
-instance ObjectClass Object where
+instance Object SomeObject where
 	toObject = id
-	fromForeignPtr = Object
+	fromForeignPtr = SomeObject
 
 newtype Type = Type (ForeignPtr Type)
-instance ObjectClass Type where
-	toObject (Type x) = Object x
+instance Object Type where
+	toObject (Type x) = SomeObject x
 	fromForeignPtr = Type
 
 newtype Dictionary = Dictionary (ForeignPtr Dictionary)
-instance ObjectClass Dictionary where
-	toObject (Dictionary x) = Object x
+instance Object Dictionary where
+	toObject (Dictionary x) = SomeObject x
 	fromForeignPtr = Dictionary
 
 newtype List = List (ForeignPtr List)
-instance ObjectClass List where
-	toObject (List x) = Object x
+instance Object List where
+	toObject (List x) = SomeObject x
 	fromForeignPtr = List
 
 newtype Tuple = Tuple (ForeignPtr Tuple)
-instance ObjectClass Tuple where
-	toObject (Tuple x) = Object x
+instance Object Tuple where
+	toObject (Tuple x) = SomeObject x
 	fromForeignPtr = Tuple
 
-withObject :: ObjectClass obj => obj -> (Ptr a -> IO b) -> IO b
+withObject :: Object obj => obj -> (Ptr a -> IO b) -> IO b
 withObject obj io = case toObject obj of
-	Object ptr -> withForeignPtr ptr (io . castPtr)
+	SomeObject ptr -> withForeignPtr ptr (io . castPtr)
 
-peekObject :: ObjectClass obj => Ptr a -> IO obj
+peekObject :: Object obj => Ptr a -> IO obj
 peekObject ptr = E.bracketOnError incPtr decref mkObj where
 	incPtr = incref ptr >> return ptr
 	mkObj _ = fromForeignPtr <$> newForeignPtr staticDecref (castPtr ptr)
 
-peekStaticObject :: ObjectClass obj => Ptr a -> IO obj
+peekStaticObject :: Object obj => Ptr a -> IO obj
 peekStaticObject ptr = fromForeignPtr <$> newForeignPtr_ (castPtr ptr)
 
-unsafeStealObject :: ObjectClass obj => Ptr a -> IO obj
+unsafeStealObject :: Object obj => Ptr a -> IO obj
 unsafeStealObject ptr = fromForeignPtr <$> newForeignPtr staticDecref (castPtr ptr)
 
-stealObject :: ObjectClass obj => Ptr a -> IO obj
+stealObject :: Object obj => Ptr a -> IO obj
 stealObject ptr = exceptionIf (ptr == nullPtr) >> unsafeStealObject ptr
 
 {# fun hscpython_Py_INCREF as incref
@@ -121,9 +121,9 @@ foreign import ccall "hscpython-shim.h &hscpython_Py_DECREF"
 	staticDecref :: FunPtr (Ptr a -> IO ())
 
 data Exception = Exception
-	{ exceptionType      :: Object
-	, exceptionValue     :: Maybe Object
-	, exceptionTraceback :: Maybe Object
+	{ exceptionType      :: SomeObject
+	, exceptionValue     :: Maybe SomeObject
+	, exceptionTraceback :: Maybe SomeObject
 	}
 	deriving (Typeable)
 
