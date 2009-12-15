@@ -31,7 +31,7 @@ instance ObjectClass Complex where
 	toObject (Complex x) = Object x
 	fromForeignPtr = Complex
 
-{# fun hscpython_PyComplex_Type as complexType
+{# fun pure hscpython_PyComplex_Type as complexType
 	{} -> `Type' peekStaticObject* #}
 
 toComplex :: Complex -> IO (C.Complex Double)

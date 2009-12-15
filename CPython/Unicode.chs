@@ -33,7 +33,7 @@ instance ObjectClass Unicode where
 	toObject (Unicode x) = Object x
 	fromForeignPtr = Unicode
 
-{# fun hscpython_PyUnicode_Type as unicodeType
+{# fun pure hscpython_PyUnicode_Type as unicodeType
 	{} -> `Type' peekStaticObject* #}
 
 -- Python can be compiled in either UCS-2 or UCS-4 mode, which will change how

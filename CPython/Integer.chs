@@ -34,7 +34,7 @@ instance ObjectClass Integer where
 	toObject (Integer x) = Object x
 	fromForeignPtr = Integer
 
-{# fun hscpython_PyLong_Type as integerType
+{# fun pure hscpython_PyLong_Type as integerType
 	{} -> `Type' peekStaticObject* #}
 
 toInteger :: Integer -> IO Prelude.Integer

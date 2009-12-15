@@ -24,7 +24,7 @@ import CPython.Internal
 #include <Python.h>
 #include <hscpython-shim.h>
 
-{# fun hscpython_PyType_Type as typeType
+{# fun pure hscpython_PyType_Type as typeType
 	{} -> `Type' peekStaticObject* #}
 
 {# fun PyType_IsSubtype as isSubtype
