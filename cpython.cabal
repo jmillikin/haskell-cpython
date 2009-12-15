@@ -26,6 +26,7 @@ library
     CPython.Bytes
     CPython.Dictionary
     CPython.Exception
+    CPython.Integer
     CPython.List
     CPython.Object
     CPython.Tuple

@@ -40,6 +40,16 @@ int hscpython_PyTuple_Check (PyObject *o)
 int hscpython_PyTuple_CheckExact (PyObject *o)
 { return PyTuple_CheckExact (o); }
 
+/* Long */
+PyTypeObject *hscpython_PyLong_Type ()
+{ return &PyLong_Type; }
+
+int hscpython_PyLong_Check (PyObject *o)
+{ return PyLong_Check (o); }
+
+int hscpython_PyLong_CheckExact (PyObject *o)
+{ return PyLong_CheckExact (o); }
+
 /* Type */
 PyTypeObject *hscpython_PyType_Type ()
 { return &PyType_Type; }
