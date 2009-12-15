@@ -30,6 +30,16 @@ int hscpython_PyObject_DelAttr(PyObject *o, PyObject *name)
 int hscpython_PyObject_TypeCheck (PyObject *o, PyTypeObject *type)
 { return PyObject_TypeCheck (o, type); }
 
+/* Tuple */
+PyTypeObject *hscpython_PyTuple_Type ()
+{ return &PyTuple_Type; }
+
+int hscpython_PyTuple_Check (PyObject *o)
+{ return PyTuple_Check (o); }
+
+int hscpython_PyTuple_CheckExact (PyObject *o)
+{ return PyTuple_CheckExact (o); }
+
 /* Type */
 PyTypeObject *hscpython_PyType_Type ()
 { return &PyType_Type; }

@@ -36,6 +36,8 @@ module CPython.Internal
 	, peekObject
 	, peekStaticObject
 	, stealObject
+	, incref
+	, decref
 	
 	-- * Exceptions
 	, Exception (..)
