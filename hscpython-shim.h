@@ -25,6 +25,7 @@ PyTypeObject *hscpython_PyFloat_Type ();
 PyTypeObject *hscpython_PyComplex_Type ();
 PyTypeObject *hscpython_PyUnicode_Type ();
 PyTypeObject *hscpython_PyBytes_Type ();
+PyTypeObject *hscpython_PyByteArray_Type ();
 
 /* Constants */
 PyObject *hscpython_Py_None ();
