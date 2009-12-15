@@ -17,8 +17,6 @@
 module CPython.Float
 	( Float
 	, floatType
-	, check
-	, checkExact
 	, toDouble
 	, fromDouble
 	) where
@@ -35,16 +33,6 @@ instance ObjectClass Float where
 
 {# fun hscpython_PyFloat_Type as floatType
 	{} -> `Type' peekStaticObject* #}
-
-{# fun hscpython_PyFloat_Check as check
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
-
-{# fun hscpython_PyFloat_CheckExact as checkExact
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
 
 {# fun PyFloat_AsDouble as toDouble
 	{ withObject* `Float'

@@ -15,31 +15,15 @@ enum HSCPythonComparisonEnum
 , HSCPYTHON_GE = Py_GE
 };
 
-/* Tuple */
-PyTypeObject *hscpython_PyTuple_Type ();
-int hscpython_PyTuple_Check (PyObject *);
-int hscpython_PyTuple_CheckExact (PyObject *);
-
-/* Long */
-PyTypeObject *hscpython_PyLong_Type ();
-int hscpython_PyLong_Check (PyObject *);
-int hscpython_PyLong_CheckExact (PyObject *);
-
-/* Float */
-PyTypeObject *hscpython_PyFloat_Type ();
-int hscpython_PyFloat_Check (PyObject *);
-int hscpython_PyFloat_CheckExact (PyObject *);
-
-/* Type */
+/* Types */
 PyTypeObject *hscpython_PyType_Type ();
-int hscpython_PyType_Check (PyObject *);
-int hscpython_PyType_CheckExact (PyObject *);
+PyTypeObject *hscpython_PyTuple_Type ();
+PyTypeObject *hscpython_PyLong_Type ();
+PyTypeObject *hscpython_PyFloat_Type ();
+PyTypeObject *hscpython_PyUnicode_Type ();
 
 /* Unicode */
 unsigned char hscpython_unicode_mode ();
-PyTypeObject *hscpython_PyUnicode_Type ();
-int hscpython_PyUnicode_Check (PyObject *);
-int hscpython_PyUnicode_CheckExact (PyObject *);
 Py_ssize_t hscpython_PyUnicode_GET_SIZE (PyObject *);
 Py_UNICODE *hscpython_PyUnicode_AS_UNICODE (PyObject *);
 PyObject *hscpython_PyUnicode_FromUnicode (Py_UNICODE *, Py_ssize_t);

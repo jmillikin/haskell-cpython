@@ -17,8 +17,6 @@
 module CPython.Tuple
 	( Tuple
 	, tupleType
-	, check
-	, checkExact
 	, new
 	, pack
 	, size
@@ -33,16 +31,6 @@ import CPython.Internal hiding (new)
 
 {# fun hscpython_PyTuple_Type as tupleType
 	{} -> `Type' peekStaticObject* #}
-
-{# fun hscpython_PyTuple_Check as check
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
-
-{# fun hscpython_PyTuple_CheckExact as checkExact
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
 
 {# fun PyTuple_New as new
 	{ fromIntegral `Integer'

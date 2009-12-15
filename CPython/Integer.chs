@@ -17,8 +17,6 @@
 module CPython.Integer
 	( Integer
 	, integerType
-	, check
-	, checkExact
 	, toInteger
 	, fromInteger
 	) where
@@ -38,16 +36,6 @@ instance ObjectClass Integer where
 
 {# fun hscpython_PyLong_Type as integerType
 	{} -> `Type' peekStaticObject* #}
-
-{# fun hscpython_PyLong_Check as check
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
-
-{# fun hscpython_PyLong_CheckExact as checkExact
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
 
 toInteger :: Integer -> IO Prelude.Integer
 toInteger py = do

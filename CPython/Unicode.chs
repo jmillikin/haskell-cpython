@@ -17,8 +17,6 @@
 module CPython.Unicode
 	( Unicode
 	, unicodeType
-	, check
-	, checkExact
 	, toString
 	, fromString
 	, fromObject
@@ -37,16 +35,6 @@ instance ObjectClass Unicode where
 
 {# fun hscpython_PyUnicode_Type as unicodeType
 	{} -> `Type' peekStaticObject* #}
-
-{# fun hscpython_PyUnicode_Check as check
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
-
-{# fun hscpython_PyUnicode_CheckExact as checkExact
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
 
 -- Python can be compiled in either UCS-2 or UCS-4 mode, which will change how
 -- the string should be decoded.

@@ -30,45 +30,21 @@ int hscpython_PyObject_DelAttr(PyObject *o, PyObject *name)
 int hscpython_PyObject_TypeCheck (PyObject *o, PyTypeObject *type)
 { return PyObject_TypeCheck (o, type); }
 
-/* Tuple */
-PyTypeObject *hscpython_PyTuple_Type ()
-{ return &PyTuple_Type; }
-
-int hscpython_PyTuple_Check (PyObject *o)
-{ return PyTuple_Check (o); }
-
-int hscpython_PyTuple_CheckExact (PyObject *o)
-{ return PyTuple_CheckExact (o); }
-
-/* Long */
-PyTypeObject *hscpython_PyLong_Type ()
-{ return &PyLong_Type; }
-
-int hscpython_PyLong_Check (PyObject *o)
-{ return PyLong_Check (o); }
-
-int hscpython_PyLong_CheckExact (PyObject *o)
-{ return PyLong_CheckExact (o); }
-
-/* Float */
-PyTypeObject *hscpython_PyFloat_Type ()
-{ return &PyFloat_Type; }
-
-int hscpython_PyFloat_Check (PyObject *o)
-{ return PyFloat_Check (o); }
-
-int hscpython_PyFloat_CheckExact (PyObject *o)
-{ return PyFloat_CheckExact (o); }
-
-/* Type */
+/* Types */
 PyTypeObject *hscpython_PyType_Type ()
 { return &PyType_Type; }
 
-int hscpython_PyType_Check (PyObject *o)
-{ return PyType_Check (o); }
+PyTypeObject *hscpython_PyTuple_Type ()
+{ return &PyTuple_Type; }
 
-int hscpython_PyType_CheckExact (PyObject *o)
-{ return PyType_CheckExact (o); }
+PyTypeObject *hscpython_PyLong_Type ()
+{ return &PyLong_Type; }
+
+PyTypeObject *hscpython_PyFloat_Type ()
+{ return &PyFloat_Type; }
+
+PyTypeObject *hscpython_PyUnicode_Type ()
+{ return &PyUnicode_Type; }
 
 /* Unicode */
 unsigned char hscpython_unicode_mode ()
@@ -79,15 +55,6 @@ unsigned char hscpython_unicode_mode ()
 	return 0;
 #endif
 }
-
-PyTypeObject *hscpython_PyUnicode_Type ()
-{ return &PyUnicode_Type; }
-
-int hscpython_PyUnicode_Check (PyObject *o)
-{ return PyUnicode_Check (o); }
-
-int hscpython_PyUnicode_CheckExact (PyObject *o)
-{ return PyUnicode_CheckExact (o); }
 
 Py_ssize_t hscpython_PyUnicode_GET_SIZE (PyObject *o)
 { return PyUnicode_GET_SIZE (o); }
