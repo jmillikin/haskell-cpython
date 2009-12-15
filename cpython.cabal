@@ -23,6 +23,7 @@ library
 
   exposed-modules:
     CPython
+    CPython.ByteArray
     CPython.Bytes
     CPython.Complex
     CPython.Constants

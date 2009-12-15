@@ -58,6 +58,9 @@ PyTypeObject *hscpython_PyUnicode_Type ()
 PyTypeObject *hscpython_PyBytes_Type ()
 { return &PyBytes_Type; }
 
+PyTypeObject *hscpython_PyByteArray_Type ()
+{ return &PyByteArray_Type; }
+
 /* Constants */
 PyObject *hscpython_Py_None ()
 { return Py_None; }
