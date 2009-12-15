@@ -25,6 +25,11 @@ PyTypeObject *hscpython_PyLong_Type ();
 int hscpython_PyLong_Check (PyObject *);
 int hscpython_PyLong_CheckExact (PyObject *);
 
+/* Float */
+PyTypeObject *hscpython_PyFloat_Type ();
+int hscpython_PyFloat_Check (PyObject *);
+int hscpython_PyFloat_CheckExact (PyObject *);
+
 /* Type */
 PyTypeObject *hscpython_PyType_Type ();
 int hscpython_PyType_Check (PyObject *);
