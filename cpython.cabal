@@ -1,0 +1,41 @@
+name: cpython
+version: 3.1.0
+synopsis: Bindings for libpython
+license: GPL
+license-file: license.txt
+author: John Millikin
+maintainer: jmillikin@gmail.com
+build-type: Simple
+cabal-version: >=1.2
+category: TODO
+
+description:
+  TODO
+
+library
+  ghc-options: -Wall
+  build-depends:
+      base >=4 && < 5
+    , bytestring
+
+  build-tools:
+    c2hs >= 0.16
+
+  exposed-modules:
+    CPython
+    CPython.Bytes
+    CPython.Dictionary
+    CPython.Exception
+    CPython.List
+    CPython.Object
+    CPython.Tuple
+    CPython.Type
+    CPython.Unicode
+
+  other-modules:
+    CPython.Internal
+
+  c-sources: hscpython-shim.c
+  include-dirs: .
+
+  pkgconfig-depends: python-3.1
