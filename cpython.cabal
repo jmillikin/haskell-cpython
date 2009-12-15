@@ -25,6 +25,7 @@ library
     CPython
     CPython.Bytes
     CPython.Complex
+    CPython.Constants
     CPython.Dictionary
     CPython.Exception
     CPython.Float

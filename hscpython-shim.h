@@ -26,6 +26,11 @@ PyTypeObject *hscpython_PyComplex_Type ();
 PyTypeObject *hscpython_PyUnicode_Type ();
 PyTypeObject *hscpython_PyBytes_Type ();
 
+/* Constants */
+PyObject *hscpython_Py_None ();
+PyObject *hscpython_Py_True ();
+PyObject *hscpython_Py_False ();
+
 /* Unicode */
 unsigned char hscpython_unicode_mode ();
 Py_ssize_t hscpython_PyUnicode_GET_SIZE (PyObject *);

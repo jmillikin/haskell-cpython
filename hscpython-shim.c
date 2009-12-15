@@ -58,6 +58,16 @@ PyTypeObject *hscpython_PyUnicode_Type ()
 PyTypeObject *hscpython_PyBytes_Type ()
 { return &PyBytes_Type; }
 
+/* Constants */
+PyObject *hscpython_Py_None ()
+{ return Py_None; }
+
+PyObject *hscpython_Py_True ()
+{ return Py_True; }
+
+PyObject *hscpython_Py_False ()
+{ return Py_False; }
+
 /* Unicode */
 unsigned char hscpython_unicode_mode ()
 {
