@@ -15,7 +15,7 @@
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE ExistentialQuantification #-}
-module CPython.Number
+module CPython.Protocols.Number
 	( Number (..)
 	, SomeNumber
 	, castToNumber
@@ -56,10 +56,10 @@ import Prelude hiding (Integer, Float, subtract, and, or, toInteger)
 import qualified Prelude as Prelude
 import CPython.Internal hiding (xor, shiftR, shiftL)
 import CPython.Constants (none)
-import CPython.Integer (Integer)
-import CPython.Float (Float)
-import CPython.Complex (Complex)
-import CPython.Unicode (Unicode)
+import CPython.Types.Complex (Complex)
+import CPython.Types.Float (Float)
+import CPython.Types.Integer (Integer)
+import CPython.Types.Unicode (Unicode)
 
 #include <Python.h>
 #include <hscpython-shim.h>

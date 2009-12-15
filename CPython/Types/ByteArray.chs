@@ -14,14 +14,15 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-module CPython.Bytes
-	( Bytes
-	, bytesType
+module CPython.Types.ByteArray
+	( ByteArray
+	, byteArrayType
 	, toByteString
 	, fromByteString
 	, fromObject
-	, size
 	, append
+	, size
+	, resize
 	) where
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Unsafe as B
@@ -30,48 +31,42 @@ import CPython.Internal
 #include <Python.h>
 #include <hscpython-shim.h>
 
-newtype Bytes = Bytes (ForeignPtr Bytes)
-instance Object Bytes where
-	toObject (Bytes x) = SomeObject x
-	fromForeignPtr = Bytes
+newtype ByteArray = ByteArray (ForeignPtr ByteArray)
+instance Object ByteArray where
+	toObject (ByteArray x) = SomeObject x
+	fromForeignPtr = ByteArray
 
-{# fun pure hscpython_PyBytes_Type as bytesType
+{# fun pure hscpython_PyByteArray_Type as byteArrayType
 	{} -> `Type' peekStaticObject* #}
 
-toByteString :: Bytes -> IO B.ByteString
+toByteString :: ByteArray -> IO B.ByteString
 toByteString py =
-	alloca $ \bytesPtr ->
-	alloca $ \lenPtr ->
 	withObject py $ \pyPtr -> do
-	cRes <- {# call PyBytes_AsStringAndSize as ^ #} pyPtr bytesPtr lenPtr
-	checkStatusCode cRes
-	bytes <- peek bytesPtr
-	len <- peek lenPtr
-	B.packCStringLen (bytes, fromIntegral len)
+	size' <- {# call PyByteArray_Size as ^ #} pyPtr
+	bytes <- {# call PyByteArray_AsString as ^ #} pyPtr
+	B.packCStringLen (bytes, fromIntegral size')
 
-fromByteString :: B.ByteString -> IO Bytes
+fromByteString :: B.ByteString -> IO ByteArray
 fromByteString bytes = let
-	mkBytes = {# call PyBytes_FromStringAndSize as ^ #}
+	mkByteArray = {# call PyByteArray_FromStringAndSize as ^ #}
 	in B.unsafeUseAsCStringLen bytes $ \(cstr, len) ->
-	   stealObject =<< mkBytes cstr (fromIntegral len)
+	   stealObject =<< mkByteArray cstr (fromIntegral len)
 
-{# fun PyBytes_FromObject as fromObject
+{# fun PyByteArray_FromObject as fromObject
 	`Object self ' =>
 	{ withObject* `self'
-	} -> `Bytes' stealObject* #}
+	} -> `ByteArray' stealObject* #}
 
-{# fun PyBytes_Size as size
-	{ withObject* `Bytes'
+{# fun PyByteArray_Concat as append
+	{ withObject* `ByteArray'
+	, withObject* `ByteArray'
+	} -> `ByteArray' stealObject* #}
+
+{# fun PyByteArray_Size as size
+	{ withObject* `ByteArray'
 	} -> `Integer' toInteger #}
 
-append :: Bytes -> Bytes -> IO Bytes
-append self next =
-	alloca $ \tempPtr ->
-	withObject self $ \selfPtr -> do
-	incref selfPtr
-	poke tempPtr selfPtr
-	withObject next $ \nextPtr -> do
-	{# call PyBytes_Concat as ^ #} tempPtr nextPtr
-	newSelf <- peek tempPtr
-	stealObject newSelf
-
+{# fun PyByteArray_Resize as resize
+	{ withObject* `ByteArray'
+	, fromIntegral `Integer'
+	} -> `()' checkStatusCode* #}
