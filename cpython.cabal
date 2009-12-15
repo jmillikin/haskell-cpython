@@ -35,6 +35,7 @@ library
     CPython.Mapping
     CPython.Number
     CPython.Object
+    CPython.Sequence
     CPython.Tuple
     CPython.Type
     CPython.Unicode
