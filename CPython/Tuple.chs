@@ -36,13 +36,13 @@ import CPython.Internal hiding (new)
 	{ fromIntegral `Integer'
 	} -> `Tuple' stealObject* #}
 
-pack :: [Object] -> IO Tuple
+pack :: [SomeObject] -> IO Tuple
 pack xs = do
 	tuple <- new . toInteger $ length xs
 	setItems tuple 0 xs
 	return tuple
 
-setItems :: Tuple -> Integer -> [Object] -> IO ()
+setItems :: Tuple -> Integer -> [SomeObject] -> IO ()
 setItems _ _ [] = return ()
 setItems t idx (x:xs) = setItem t idx x >> setItems t idx xs
 
@@ -53,7 +53,7 @@ setItems t idx (x:xs) = setItem t idx x >> setItems t idx xs
 {# fun PyTuple_GetItem as getItem
 	{ withObject* `Tuple'
 	, fromIntegral `Integer'
-	} -> `Object' peekObject* #}
+	} -> `SomeObject' peekObject* #}
 
 {# fun PyTuple_GetSlice as getSlice
 	{ withObject* `Tuple'
@@ -61,7 +61,7 @@ setItems t idx (x:xs) = setItem t idx x >> setItems t idx xs
 	, fromIntegral `Integer'
 	} -> `Tuple' stealObject* #}
 
-setItem :: ObjectClass o => Tuple -> Integer -> o -> IO ()
+setItem :: Object o => Tuple -> Integer -> o -> IO ()
 setItem self index x =
 	withObject self $ \selfPtr ->
 	withObject x $ \xPtr -> do

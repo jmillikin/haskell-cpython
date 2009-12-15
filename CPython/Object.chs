@@ -16,7 +16,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module CPython.Object
 	( Object
-	, ObjectClass
+	, SomeObject
 	, toObject
 	, hasAttribute
 	, getAttribute
@@ -55,26 +55,26 @@ import qualified CPython.Bytes as B
 #include <hscpython-shim.h>
 
 {# fun PyObject_HasAttr as hasAttribute
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	, withObject* `U.Unicode'
 	} -> `Bool' #}
 
 {# fun PyObject_GetAttr as getAttribute
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	, withObject* `U.Unicode'
-	} -> `Object' stealObject* #}
+	} -> `SomeObject' stealObject* #}
 
 {# fun PyObject_SetAttr as setAttribute
-	`(ObjectClass self, ObjectClass v)' =>
+	`(Object self, Object v)' =>
 	{ withObject* `self'
 	, withObject* `U.Unicode'
 	, withObject* `v'
 	} -> `()' checkStatusCode* #}
 
 {# fun hscpython_PyObject_DelAttr as deleteAttribute
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	, withObject* `U.Unicode'
 	} -> `()' checkStatusCode* #}
@@ -94,50 +94,50 @@ comparisonToInt = fromIntegral . fromEnum . enum where
 	enum GE = HSCPYTHON_GE
 
 {# fun PyObject_RichCompareBool as richCompare
-	`(ObjectClass a, ObjectClass b)' =>
+	`(Object a, Object b)' =>
 	{ withObject* `a'
 	, withObject* `b'
 	, comparisonToInt `Comparison'
 	} -> `Bool' checkBoolReturn* #}
 
 {# fun PyObject_Repr as repr
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `U.Unicode' stealObject* #}
 
 {# fun PyObject_ASCII as ascii
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `U.Unicode' stealObject* #}
 
 {# fun PyObject_Str as string
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `U.Unicode' stealObject* #}
 
 {# fun PyObject_Bytes as bytes
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `B.Bytes' stealObject* #}
 
 {# fun PyObject_IsInstance as isInstance
-	`(ObjectClass self, ObjectClass cls)' =>
+	`(Object self, Object cls)' =>
 	{ withObject* `self'
 	, withObject* `cls'
 	} -> `Bool' checkBoolReturn* #}
 
 {# fun PyObject_IsSubclass as isSubclass
-	`(ObjectClass derived, ObjectClass cls)' =>
+	`(Object derived, Object cls)' =>
 	{ withObject* `derived'
 	, withObject* `cls'
 	} -> `Bool' checkBoolReturn* #}
 
 {# fun PyCallable_Check as callable
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `Bool' checkBoolReturn* #}
 
-call :: ObjectClass self => self -> Tuple -> Maybe Dictionary -> IO Object
+call :: Object self => self -> Tuple -> Maybe Dictionary -> IO SomeObject
 call self args kwargs =
 	withObject self $ \selfPtr ->
 	withObject args $ \argsPtr ->
@@ -145,76 +145,76 @@ call self args kwargs =
 	{# call PyObject_Call as ^ #} selfPtr argsPtr kwargsPtr
 	>>= stealObject
 
-callObject :: ObjectClass self => self -> Maybe Tuple -> IO Object
+callObject :: Object self => self -> Maybe Tuple -> IO SomeObject
 callObject self args =
 	withObject self $ \selfPtr ->
 	maybeWith withObject args $ \argsPtr ->
 	{# call PyObject_CallObject as ^ #} selfPtr argsPtr
 	>>= stealObject
 
-callMethod :: ObjectClass self => self -> U.Unicode -> Tuple -> Maybe Dictionary -> IO Object
+callMethod :: Object self => self -> U.Unicode -> Tuple -> Maybe Dictionary -> IO SomeObject
 callMethod self name args kwargs = do
 	method <- getAttribute self name
 	call method args kwargs
 
-hash :: ObjectClass self => self -> IO Integer
+hash :: Object self => self -> IO Integer
 hash self = withObject self $ \ptr -> do
 	cRes <- {# call PyObject_Hash as ^ #} ptr
 	exceptionIf $ cRes == -1
 	return $ toInteger cRes
 
 {# fun PyObject_IsTrue as isTrue
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `Bool' checkBoolReturn* #}
 
 {# fun PyObject_Not as not
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `Bool' checkBoolReturn* #}
 
 {# fun PyObject_Type as getType
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `Type' stealObject* #}
 
 {# fun hscpython_PyObject_TypeCheck as typeCheck
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	, withObject* `Type'
 	} -> `Bool' #}
 
-size :: ObjectClass self => self -> IO Integer
+size :: Object self => self -> IO Integer
 size self = withObject self $ \ptr -> do
 	cRes <- {# call PyObject_Size as ^ #} ptr
 	exceptionIf $ cRes == -1
 	return $ toInteger cRes
 
 {# fun PyObject_GetItem as getItem
-	`(ObjectClass self, ObjectClass key)' =>
+	`(Object self, Object key)' =>
 	{ withObject* `self'
 	, withObject* `key'
-	} -> `Object' stealObject* #}
+	} -> `SomeObject' stealObject* #}
 
 {# fun PyObject_SetItem as setItem
-	`(ObjectClass self, ObjectClass key, ObjectClass value)' =>
+	`(Object self, Object key, Object value)' =>
 	{ withObject* `self'
 	, withObject* `key'
 	, withObject* `value'
 	} -> `()' checkStatusCode* #}
 
 {# fun PyObject_DelItem as deleteItem
-	`(ObjectClass self, ObjectClass key)' =>
+	`(Object self, Object key)' =>
 	{ withObject* `self'
 	, withObject* `key'
 	} -> `()' checkStatusCode* #}
 
 {# fun PyObject_Dir as dir
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
 	} -> `List' stealObject* #}
 
 {# fun PyObject_GetIter as getIterator
-	`ObjectClass self' =>
+	`Object self' =>
 	{ withObject* `self'
-	} -> `Object' stealObject* #}
+	} -> `SomeObject' stealObject* #}

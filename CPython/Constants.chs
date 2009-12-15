@@ -28,13 +28,13 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 {# fun hscpython_Py_None as none
-	{} -> `Object' peekObject* #}
+	{} -> `SomeObject' peekObject* #}
 
 {# fun hscpython_Py_True as true
-	{} -> `Object' peekObject* #}
+	{} -> `SomeObject' peekObject* #}
 
 {# fun hscpython_Py_False as false
-	{} -> `Object' peekObject* #}
+	{} -> `SomeObject' peekObject* #}
 
 {# fun pure hscpython_Py_None as rawNone
 	{} -> `Ptr ()' id #}
@@ -45,11 +45,11 @@ import CPython.Internal
 {# fun pure hscpython_Py_False as rawFalse
 	{} -> `Ptr ()' id #}
 
-isNone :: Object -> IO Bool
+isNone :: SomeObject -> IO Bool
 isNone obj = withObject obj $ \ptr -> return $ ptr == rawNone
 
-isTrue :: Object -> IO Bool
+isTrue :: SomeObject -> IO Bool
 isTrue obj = withObject obj $ \ptr -> return $ ptr == rawTrue
 
-isFalse :: Object -> IO Bool
+isFalse :: SomeObject -> IO Bool
 isFalse obj = withObject obj $ \ptr -> return $ ptr == rawFalse

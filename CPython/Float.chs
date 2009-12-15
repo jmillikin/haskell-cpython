@@ -27,8 +27,8 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype Float = Float (ForeignPtr Float)
-instance ObjectClass Float where
-	toObject (Float x) = Object x
+instance Object Float where
+	toObject (Float x) = SomeObject x
 	fromForeignPtr = Float
 
 {# fun pure hscpython_PyFloat_Type as floatType

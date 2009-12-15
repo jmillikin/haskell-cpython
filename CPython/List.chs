@@ -43,13 +43,13 @@ import CPython.Internal hiding (new)
 	{ fromIntegral `Integer'
 	} -> `List' stealObject* #}
 
-pack :: [Object] -> IO List
+pack :: [SomeObject] -> IO List
 pack xs = do
 	list <- new . toInteger $ length xs
 	setItems list 0 xs
 	return list
 
-setItems :: List -> Integer -> [Object] -> IO ()
+setItems :: List -> Integer -> [SomeObject] -> IO ()
 setItems _ _ [] = return ()
 setItems l idx (x:xs) = setItem l idx x >> setItems l idx xs
 
@@ -60,9 +60,9 @@ setItems l idx (x:xs) = setItem l idx x >> setItems l idx xs
 {# fun PyList_GetItem as getItem
 	{ withObject* `List'
 	, fromIntegral `Integer'
-	} -> `Object' peekObject* #}
+	} -> `SomeObject' peekObject* #}
 
-setItem :: ObjectClass o => List -> Integer -> o -> IO ()
+setItem :: Object o => List -> Integer -> o -> IO ()
 setItem self index x =
 	withObject self $ \selfPtr ->
 	withObject x $ \xPtr -> do
@@ -71,14 +71,14 @@ setItem self index x =
 	checkStatusCode cRes
 
 {# fun PyList_Insert as insert
-	`ObjectClass item' =>
+	`Object item' =>
 	{ withObject* `List'
 	, fromIntegral `Integer'
 	, withObject* `item'
 	} -> `()' checkStatusCode* #}
 
 {# fun PyList_Append as append
-	`ObjectClass item' =>
+	`Object item' =>
 	{ withObject* `List'
 	, withObject* `item'
 	} -> `()' checkStatusCode* #}
