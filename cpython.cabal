@@ -26,6 +26,7 @@ library
     CPython.Bytes
     CPython.Dictionary
     CPython.Exception
+    CPython.Float
     CPython.Integer
     CPython.List
     CPython.Object

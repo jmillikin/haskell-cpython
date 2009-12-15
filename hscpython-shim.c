@@ -50,6 +50,16 @@ int hscpython_PyLong_Check (PyObject *o)
 int hscpython_PyLong_CheckExact (PyObject *o)
 { return PyLong_CheckExact (o); }
 
+/* Float */
+PyTypeObject *hscpython_PyFloat_Type ()
+{ return &PyFloat_Type; }
+
+int hscpython_PyFloat_Check (PyObject *o)
+{ return PyFloat_Check (o); }
+
+int hscpython_PyFloat_CheckExact (PyObject *o)
+{ return PyFloat_CheckExact (o); }
+
 /* Type */
 PyTypeObject *hscpython_PyType_Type ()
 { return &PyType_Type; }
