@@ -31,7 +31,7 @@ instance ObjectClass Float where
 	toObject (Float x) = Object x
 	fromForeignPtr = Float
 
-{# fun hscpython_PyFloat_Type as floatType
+{# fun pure hscpython_PyFloat_Type as floatType
 	{} -> `Type' peekStaticObject* #}
 
 {# fun PyFloat_AsDouble as toDouble
