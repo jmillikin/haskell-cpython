@@ -17,8 +17,6 @@
 module CPython.Type
 	( Type
 	, typeType
-	, check
-	, checkExact
 	, isSubtype
 	) where
 import CPython.Internal
@@ -28,16 +26,6 @@ import CPython.Internal
 
 {# fun hscpython_PyType_Type as typeType
 	{} -> `Type' peekStaticObject* #}
-
-{# fun hscpython_PyType_Check as check
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
-
-{# fun hscpython_PyType_CheckExact as checkExact
-	`ObjectClass self ' =>
-	{ withObject* `self'
-	} -> `Bool' #}
 
 {# fun PyType_IsSubtype as isSubtype
 	{ withObject* `Type'
