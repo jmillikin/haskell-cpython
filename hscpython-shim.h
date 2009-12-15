@@ -24,6 +24,7 @@ PyTypeObject *hscpython_PyLong_Type ();
 PyTypeObject *hscpython_PyFloat_Type ();
 PyTypeObject *hscpython_PyComplex_Type ();
 PyTypeObject *hscpython_PyUnicode_Type ();
+PyTypeObject *hscpython_PyBytes_Type ();
 
 /* Unicode */
 unsigned char hscpython_unicode_mode ();
