@@ -22,6 +22,7 @@ module CPython.Internal
 	  module Foreign
 	, module Foreign.C
 	, cToBool
+	, cFromBool
 	
 	-- * Fundamental types
 	, Object (..)
@@ -56,6 +57,9 @@ import Foreign.C
 
 cToBool :: CInt -> Bool
 cToBool = (/= 0)
+
+cFromBool :: Bool -> CInt
+cFromBool x = if x then 1 else 0
 
 data Object = forall a. (ObjectClass a) => Object (ForeignPtr a)
 
