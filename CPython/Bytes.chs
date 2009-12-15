@@ -16,10 +16,15 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module CPython.Bytes
 	( Bytes
-	--, bytesType
-	--, check
-	--, checkExact
+	, bytesType
+	, toByteString
+	, fromByteString
+	, fromObject
+	, size
+	, append
 	) where
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Unsafe as B
 import CPython.Internal
 
 #include <Python.h>
@@ -29,3 +34,44 @@ newtype Bytes = Bytes (ForeignPtr Bytes)
 instance ObjectClass Bytes where
 	toObject (Bytes x) = Object x
 	fromForeignPtr = Bytes
+
+{# fun pure hscpython_PyBytes_Type as bytesType
+	{} -> `Type' peekStaticObject* #}
+
+toByteString :: Bytes -> IO B.ByteString
+toByteString py =
+	alloca $ \bytesPtr ->
+	alloca $ \lenPtr ->
+	withObject py $ \pyPtr -> do
+	cRes <- {# call PyBytes_AsStringAndSize as ^ #} pyPtr bytesPtr lenPtr
+	checkStatusCode cRes
+	bytes <- peek bytesPtr
+	len <- peek lenPtr
+	B.packCStringLen (bytes, fromIntegral len)
+
+fromByteString :: B.ByteString -> IO Bytes
+fromByteString bytes = let
+	mkBytes = {# call PyBytes_FromStringAndSize as ^ #}
+	in B.unsafeUseAsCStringLen bytes $ \(cstr, len) ->
+	   stealObject =<< mkBytes cstr (fromIntegral len)
+
+{# fun PyBytes_FromObject as fromObject
+	`ObjectClass self ' =>
+	{ withObject* `self'
+	} -> `Bytes' stealObject* #}
+
+{# fun PyBytes_Size as size
+	{ withObject* `Bytes'
+	} -> `Integer' toInteger #}
+
+append :: Bytes -> Bytes -> IO Bytes
+append self next =
+	alloca $ \tempPtr ->
+	withObject self $ \selfPtr -> do
+	incref selfPtr
+	poke tempPtr selfPtr
+	withObject next $ \nextPtr -> do
+	{# call PyBytes_Concat as ^ #} tempPtr nextPtr
+	newSelf <- peek tempPtr
+	stealObject newSelf
+

@@ -55,6 +55,9 @@ PyTypeObject *hscpython_PyComplex_Type ()
 PyTypeObject *hscpython_PyUnicode_Type ()
 { return &PyUnicode_Type; }
 
+PyTypeObject *hscpython_PyBytes_Type ()
+{ return &PyBytes_Type; }
+
 /* Unicode */
 unsigned char hscpython_unicode_mode ()
 {
