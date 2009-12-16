@@ -44,7 +44,7 @@ pack xs = do
 
 setItems :: Tuple -> Integer -> [SomeObject] -> IO ()
 setItems _ _ [] = return ()
-setItems t idx (x:xs) = setItem t idx x >> setItems t idx xs
+setItems t idx (x:xs) = setItem t idx x >> setItems t (idx + 1) xs
 
 {# fun PyTuple_Size as size
 	{ withObject* `Tuple'
