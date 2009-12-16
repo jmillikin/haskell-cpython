@@ -51,7 +51,7 @@ pack xs = do
 
 setItems :: List -> Integer -> [SomeObject] -> IO ()
 setItems _ _ [] = return ()
-setItems l idx (x:xs) = setItem l idx x >> setItems l idx xs
+setItems l idx (x:xs) = setItem l idx x >> setItems l (idx + 1) xs
 
 {# fun PyList_Size as size
 	{ withObject* `List'
