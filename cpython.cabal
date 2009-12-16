@@ -39,6 +39,8 @@ library
     CPython.Protocols.Sequence
     CPython.Constants
     CPython.Exception
+    CPython.Reflection
+    CPython.System
 
   other-modules:
     CPython.Internal
