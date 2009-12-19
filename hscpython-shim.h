@@ -31,6 +31,8 @@ PyTypeObject *hscpython_PyCode_Type ();
 PyTypeObject *hscpython_PyFunction_Type ();
 PyTypeObject *hscpython_PyInstanceMethod_Type ();
 PyTypeObject *hscpython_PyMethod_Type ();
+PyTypeObject *hscpython_PySet_Type ();
+PyTypeObject *hscpython_PyFrozenSet_Type ();
 
 /* Constants */
 PyObject *hscpython_Py_None ();
