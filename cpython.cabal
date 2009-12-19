@@ -25,11 +25,16 @@ library
     CPython
     CPython.Types.ByteArray
     CPython.Types.Bytes
+    CPython.Types.Cell
+    CPython.Types.Code
     CPython.Types.Complex
     CPython.Types.Dictionary
     CPython.Types.Float
+    CPython.Types.Function
+    CPython.Types.InstanceMethod
     CPython.Types.Integer
     CPython.Types.List
+    CPython.Types.Method
     CPython.Types.Tuple
     CPython.Types.Type
     CPython.Types.Unicode
