@@ -26,6 +26,11 @@ PyTypeObject *hscpython_PyComplex_Type ();
 PyTypeObject *hscpython_PyUnicode_Type ();
 PyTypeObject *hscpython_PyBytes_Type ();
 PyTypeObject *hscpython_PyByteArray_Type ();
+PyTypeObject *hscpython_PyCell_Type ();
+PyTypeObject *hscpython_PyCode_Type ();
+PyTypeObject *hscpython_PyFunction_Type ();
+PyTypeObject *hscpython_PyInstanceMethod_Type ();
+PyTypeObject *hscpython_PyMethod_Type ();
 
 /* Constants */
 PyObject *hscpython_Py_None ();

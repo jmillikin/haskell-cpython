@@ -61,6 +61,21 @@ PyTypeObject *hscpython_PyBytes_Type ()
 PyTypeObject *hscpython_PyByteArray_Type ()
 { return &PyByteArray_Type; }
 
+PyTypeObject *hscpython_PyCell_Type ()
+{ return &PyCell_Type; }
+
+PyTypeObject *hscpython_PyCode_Type ()
+{ return &PyCode_Type; }
+
+PyTypeObject *hscpython_PyFunction_Type ()
+{ return &PyFunction_Type; }
+
+PyTypeObject *hscpython_PyInstanceMethod_Type ()
+{ return &PyInstanceMethod_Type; }
+
+PyTypeObject *hscpython_PyMethod_Type ()
+{ return &PyMethod_Type; }
+
 /* Constants */
 PyObject *hscpython_Py_None ()
 { return Py_None; }
