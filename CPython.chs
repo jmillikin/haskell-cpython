@@ -16,9 +16,89 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module CPython
 	( initialize
+	, isInitialized
+	, finalize
+	, newInterpreter
+	, endInterpreter
+	, getProgramName
+	, setProgramName
+	, getPrefix
+	, getExecPrefix
+	, getProgramFullPath
+	, getPath
+	, getVersion
+	, getPlatform
+	, getCopyright
+	, getCompiler
+	, getBuildInfo
+	, getPythonHome
+	, setPythonHome
 	) where
+import CPython.Internal
 
 #include <Python.h>
 
+{# pointer *wchar_t as CWString nocode #}
+
 {# fun Py_Initialize as initialize
 	{} -> `()' id #}
+
+{# fun Py_IsInitialized as isInitialized
+	{} -> `Bool' #}
+
+{# fun Py_Finalize as finalize
+	{} -> `()' id #}
+
+newtype ThreadState = ThreadState (Ptr ThreadState)
+
+newInterpreter :: IO (Maybe ThreadState)
+newInterpreter = do
+	ptr <- {# call Py_NewInterpreter as ^ #}
+	return $ if ptr == nullPtr
+		then Nothing
+		else Just $ ThreadState $ castPtr ptr
+
+endInterpreter :: ThreadState -> IO ()
+endInterpreter (ThreadState ptr) =
+	{# call Py_EndInterpreter as ^ #} $ castPtr ptr
+
+{# fun Py_GetProgramName as getProgramName
+	{} -> `String' peekCWString* #}
+
+{# fun Py_SetProgramName as setProgramName
+	{ withCWString* `String'
+	} -> `()' id #}
+
+{# fun Py_GetPrefix as getPrefix
+	{} -> `String' peekCWString* #}
+
+{# fun Py_GetExecPrefix as getExecPrefix
+	{} -> `String' peekCWString* #}
+
+{# fun Py_GetProgramFullPath as getProgramFullPath
+	{} -> `String' peekCWString* #}
+
+{# fun Py_GetPath as getPath
+	{} -> `String' peekCWString* #}
+
+{# fun Py_GetVersion as getVersion
+	{} -> `String' #}
+
+{# fun Py_GetPlatform as getPlatform
+	{} -> `String' #}
+
+{# fun Py_GetCopyright as getCopyright
+	{} -> `String' #}
+
+{# fun Py_GetCompiler as getCompiler
+	{} -> `String' #}
+
+{# fun Py_GetBuildInfo as getBuildInfo
+	{} -> `String' #}
+
+{# fun Py_SetPythonHome as setPythonHome
+	{ withCWString* `String'
+	} -> `()' id #}
+
+{# fun Py_GetPythonHome as getPythonHome
+	{} -> `String' peekCWString* #}
