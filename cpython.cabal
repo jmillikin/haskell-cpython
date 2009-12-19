@@ -33,9 +33,11 @@ library
     CPython.Types.Function
     CPython.Types.InstanceMethod
     CPython.Types.Integer
+    CPython.Types.Iterator
     CPython.Types.List
     CPython.Types.Method
     CPython.Types.Set
+    CPython.Types.Slice
     CPython.Types.Tuple
     CPython.Types.Type
     CPython.Types.Unicode

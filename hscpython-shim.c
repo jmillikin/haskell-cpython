@@ -82,6 +82,15 @@ PyTypeObject *hscpython_PySet_Type ()
 PyTypeObject *hscpython_PyFrozenSet_Type ()
 { return &PyFrozenSet_Type; }
 
+PyTypeObject *hscpython_PySeqIter_Type ()
+{ return &PySeqIter_Type; }
+
+PyTypeObject *hscpython_PyCallIter_Type ()
+{ return &PyCallIter_Type; }
+
+PyTypeObject *hscpython_PySlice_Type ()
+{ return &PySlice_Type; }
+
 /* Constants */
 PyObject *hscpython_Py_None ()
 { return Py_None; }
