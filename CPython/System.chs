@@ -24,7 +24,8 @@ module CPython.System
 import CPython.Internal
 
 #include <Python.h>
-#include <hscpython-shim.h>
+
+{# pointer *wchar_t as CWString nocode #}
 
 getObject :: String -> IO (Maybe SomeObject)
 getObject name =
@@ -47,9 +48,8 @@ setObject name v =
 addWarnOption :: String -> IO ()
 addWarnOption str =
 	withCWString str $ \cwstr ->
-	{# call PySys_AddWarnOption as ^ #} $ castPtr cwstr
+	{# call PySys_AddWarnOption as ^ #} cwstr
 
-setPath :: String -> IO ()
-setPath str =
-	withCWString str $ \cwstr ->
-	{# call PySys_SetPath as ^ #} $ castPtr cwstr
+{# fun PySys_SetPath as setPath
+	{ withCWString* `String'
+	} -> `()' id #}
