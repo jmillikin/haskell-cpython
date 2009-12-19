@@ -35,6 +35,7 @@ library
     CPython.Types.Integer
     CPython.Types.List
     CPython.Types.Method
+    CPython.Types.Set
     CPython.Types.Tuple
     CPython.Types.Type
     CPython.Types.Unicode
