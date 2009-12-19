@@ -36,6 +36,7 @@ library
     CPython.Types.Iterator
     CPython.Types.List
     CPython.Types.Method
+    CPython.Types.Module
     CPython.Types.Set
     CPython.Types.Slice
     CPython.Types.Tuple

@@ -91,6 +91,9 @@ PyTypeObject *hscpython_PyCallIter_Type ()
 PyTypeObject *hscpython_PySlice_Type ()
 { return &PySlice_Type; }
 
+PyTypeObject *hscpython_PyModule_Type ()
+{ return &PyModule_Type; }
+
 /* Constants */
 PyObject *hscpython_Py_None ()
 { return Py_None; }
