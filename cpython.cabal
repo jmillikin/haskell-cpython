@@ -41,6 +41,7 @@ library
     CPython.Types.Tuple
     CPython.Types.Type
     CPython.Types.Unicode
+    CPython.Types.WeakReference
     CPython.Protocols.Mapping
     CPython.Protocols.Number
     CPython.Protocols.Object
