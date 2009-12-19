@@ -21,7 +21,6 @@ module CPython
 	, newInterpreter
 	, endInterpreter
 	, getProgramName
-	, setProgramName
 	, getPrefix
 	, getExecPrefix
 	, getProgramFullPath
@@ -32,7 +31,6 @@ module CPython
 	, getCompiler
 	, getBuildInfo
 	, getPythonHome
-	, setPythonHome
 	) where
 import CPython.Internal
 
@@ -65,9 +63,7 @@ endInterpreter (ThreadState ptr) =
 {# fun Py_GetProgramName as getProgramName
 	{} -> `String' peekCWString* #}
 
-{# fun Py_SetProgramName as setProgramName
-	{ withCWString* `String'
-	} -> `()' id #}
+-- setProgramName :: String -> IO ()
 
 {# fun Py_GetPrefix as getPrefix
 	{} -> `String' peekCWString* #}
@@ -96,9 +92,7 @@ endInterpreter (ThreadState ptr) =
 {# fun Py_GetBuildInfo as getBuildInfo
 	{} -> `String' #}
 
-{# fun Py_SetPythonHome as setPythonHome
-	{ withCWString* `String'
-	} -> `()' id #}
+-- setPythonHome :: String -> IO ()
 
 {# fun Py_GetPythonHome as getPythonHome
 	{} -> `String' peekCWString* #}
