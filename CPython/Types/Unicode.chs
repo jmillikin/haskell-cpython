@@ -24,6 +24,7 @@ module CPython.Types.Unicode
 	) where
 import Data.Char (chr, ord)
 import qualified Data.Text as T
+import qualified Data.Text.Foreign as TF
 import CPython.Internal
 
 #include <Python.h>
@@ -37,34 +38,29 @@ instance Object Unicode where
 {# fun pure hscpython_PyUnicode_Type as unicodeType
 	{} -> `Type' peekStaticObject* #}
 
--- Python can be compiled in either UCS-2 or UCS-4 mode, which will change how
--- the string should be decoded.
-data UnicodeMode = UCS2 | UCS4
-
-peekUnicodeMode :: CUChar -> UnicodeMode
-peekUnicodeMode 0 = UCS2
-peekUnicodeMode 1 = UCS4
-peekUnicodeMode x = error $ "Invalid unicode mode: " ++ show x
-
-{# fun pure hscpython_unicode_mode as unicodeMode
-	{} -> `UnicodeMode' peekUnicodeMode #}
-
 toText :: Unicode -> IO T.Text
 toText obj = withObject obj $ \ptr -> do
-	buffer <- {# call hscpython_PyUnicode_AS_UNICODE #} ptr
-	size <- {# call hscpython_PyUnicode_GET_SIZE #} ptr
+	buffer <- {# call hscpython_PyUnicode_AsUnicode #} ptr
+	size' <- {# call hscpython_PyUnicode_GetSize #} ptr
+#ifdef Py_UNICODE_WIDE
 	raw <- peekArray (fromIntegral size) buffer
-	case unicodeMode of
-		UCS2 -> undefined
-		UCS4 -> return . T.pack $ map (chr . fromIntegral) raw
+	return . T.pack $ map (chr . fromIntegral) raw
+#else
+	TF.fromPtr (castPtr buffer) (fromIntegral size')
+#endif
 
 fromText :: T.Text -> IO Unicode
-fromText txt = withBuffer fromUnicode >>= stealObject where
-	ords = map (fromIntegral . ord) (T.unpack str) :: [CUInt]
-	withBuffer io = case unicodeMode of
-		UCS2 -> undefined
-		UCS4 -> withArrayLen ords (\len ptr -> io ptr (fromIntegral len))
-	fromUnicode = {# call hscpython_PyUnicode_FromUnicode as fromUnicode' #}
+fromText str = withBuffer fromUnicode >>= stealObject where
+	fromUnicode ptr len = let
+		len' = fromIntegral len
+		ptr' = castPtr ptr
+		in {# call hscpython_PyUnicode_FromUnicode #} ptr' len'
+#ifdef Py_UNICODE_WIDE
+	ords = map (fromIntegral . ord) str :: [CUInt]
+	withBuffer = withArrayLen ords . flip
+#else
+	withBuffer = TF.useAsPtr str
+#endif
 
 {# fun hscpython_PyUnicode_FromObject as fromObject
 	`Object self ' =>

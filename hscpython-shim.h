@@ -44,9 +44,8 @@ PyObject *hscpython_Py_True ();
 PyObject *hscpython_Py_False ();
 
 /* Unicode */
-unsigned char hscpython_unicode_mode ();
-Py_ssize_t hscpython_PyUnicode_GET_SIZE (PyObject *);
-Py_UNICODE *hscpython_PyUnicode_AS_UNICODE (PyObject *);
+Py_ssize_t hscpython_PyUnicode_GetSize (PyObject *);
+Py_UNICODE *hscpython_PyUnicode_AsUnicode (PyObject *);
 PyObject *hscpython_PyUnicode_FromUnicode (Py_UNICODE *, Py_ssize_t);
 PyObject *hscpython_PyUnicode_FromObject (PyObject *);
 PyObject *hscpython_PyUnicode_Format (PyObject *, PyObject *);
