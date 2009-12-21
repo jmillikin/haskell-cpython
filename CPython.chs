@@ -37,8 +37,6 @@ import CPython.Internal
 
 #include <Python.h>
 
-{# pointer *wchar_t as CWString nocode #}
-
 {# fun Py_Initialize as initialize
 	{} -> `()' id #}
 
@@ -61,22 +59,37 @@ endInterpreter :: ThreadState -> IO ()
 endInterpreter (ThreadState ptr) =
 	{# call Py_EndInterpreter as ^ #} $ castPtr ptr
 
-{# fun Py_GetProgramName as getProgramName
-	{} -> `Text' peekTextW* #}
-
 -- setProgramName :: Text -> IO ()
 
-{# fun Py_GetPrefix as getPrefix
-	{} -> `Text' peekTextW* #}
+getProgramName :: IO Text
+getProgramName = pyGetProgramName >>= peekTextW
 
-{# fun Py_GetExecPrefix as getExecPrefix
-	{} -> `Text' peekTextW* #}
+foreign import ccall safe "Python.h Py_GetProgramName"
+	pyGetProgramName :: IO CWString
 
-{# fun Py_GetProgramFullPath as getProgramFullPath
-	{} -> `Text' peekTextW* #}
+getPrefix :: IO Text
+getPrefix = pyGetPrefix >>= peekTextW
 
-{# fun Py_GetPath as getPath
-	{} -> `Text' peekTextW* #}
+foreign import ccall safe "Python.h Py_GetPrefix"
+	pyGetPrefix :: IO CWString
+
+getExecPrefix :: IO Text
+getExecPrefix = pyGetExecPrefix >>= peekTextW
+
+foreign import ccall safe "Python.h Py_GetExecPrefix"
+	pyGetExecPrefix :: IO CWString
+
+getProgramFullPath :: IO Text
+getProgramFullPath = pyGetProgramFullPath >>= peekTextW
+
+foreign import ccall safe "Python.h Py_GetProgramFullPath"
+	pyGetProgramFullPath :: IO CWString
+
+getPath :: IO Text
+getPath = pyGetPath >>= peekTextW
+
+foreign import ccall safe "Python.h Py_GetPath"
+	pyGetPath :: IO CWString
 
 {# fun Py_GetVersion as getVersion
 	{} -> `Text' peekText* #}
@@ -95,5 +108,8 @@ endInterpreter (ThreadState ptr) =
 
 -- setPythonHome :: Text -> IO ()
 
-{# fun Py_GetPythonHome as getPythonHome
-	{} -> `Text' peekTextW* #}
+getPythonHome :: IO Text
+getPythonHome = pyGetPythonHome >>= peekTextW
+
+foreign import ccall safe "Python.h Py_GetPythonHome"
+	pyGetPythonHome :: IO CWString

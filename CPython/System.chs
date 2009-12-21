@@ -26,8 +26,6 @@ import CPython.Internal
 
 #include <Python.h>
 
-{# pointer *wchar_t as CWString nocode #}
-
 getObject :: Text -> IO (Maybe SomeObject)
 getObject name =
 	withText name $ \cstr -> do
@@ -47,10 +45,13 @@ setObject name v =
 	{} -> `()' id #}
 
 addWarnOption :: Text -> IO ()
-addWarnOption str =
-	withTextW str $ \cwstr ->
-	{# call PySys_AddWarnOption as ^ #} cwstr
+addWarnOption str = withTextW str pySysAddWarnOption
 
-{# fun PySys_SetPath as setPath
-	{ withTextW* `Text'
-	} -> `()' id #}
+foreign import ccall safe "Python.h PySys_AddWarnOption"
+	pySysAddWarnOption :: CWString -> IO ()
+
+setPath :: Text -> IO ()
+setPath path = withTextW path pySysSetPath
+
+foreign import ccall safe "Python.h PySys_SetPath"
+	pySysSetPath :: CWString -> IO ()
