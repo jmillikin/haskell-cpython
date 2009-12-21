@@ -105,20 +105,11 @@ PyObject *hscpython_Py_False ()
 { return Py_False; }
 
 /* Unicode */
-unsigned char hscpython_unicode_mode ()
-{
-#ifdef Py_UNICODE_WIDE
-	return 1;
-#else
-	return 0;
-#endif
-}
+Py_ssize_t hscpython_PyUnicode_GetSize (PyObject *o)
+{ return PyUnicode_GetSize (o); }
 
-Py_ssize_t hscpython_PyUnicode_GET_SIZE (PyObject *o)
-{ return PyUnicode_GET_SIZE (o); }
-
-Py_UNICODE *hscpython_PyUnicode_AS_UNICODE (PyObject *o)
-{ return PyUnicode_AS_UNICODE (o); }
+Py_UNICODE *hscpython_PyUnicode_AsUnicode (PyObject *o)
+{ return PyUnicode_AsUnicode (o); }
 
 PyObject *hscpython_PyUnicode_FromUnicode (Py_UNICODE *u, Py_ssize_t size)
 { return PyUnicode_FromUnicode (u, size); }
