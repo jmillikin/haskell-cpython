@@ -23,6 +23,10 @@ module CPython.Internal
 	, module Foreign.C
 	, cToBool
 	, cFromBool
+	, peekText
+	, peekTextW
+	, withText
+	, withTextW
 	
 	-- * Fundamental types
 	, SomeObject (..)
@@ -52,6 +56,7 @@ module CPython.Internal
 	) where
 import Control.Applicative ((<$>))
 import qualified Control.Exception as E
+import qualified Data.Text as T
 import Data.Typeable (Typeable)
 import Foreign
 import Foreign.C
@@ -64,6 +69,18 @@ cToBool = (/= 0)
 
 cFromBool :: Bool -> CInt
 cFromBool x = if x then 1 else 0
+
+peekText :: CString -> IO T.Text
+peekText = fmap T.pack . peekCString
+
+peekTextW :: CWString -> IO T.Text
+peekTextW = fmap T.pack . peekCWString
+
+withText :: T.Text -> (CString -> IO a) -> IO a
+withText = withCString . T.unpack
+
+withTextW :: T.Text -> (CWString -> IO a) -> IO a
+withTextW = withCWString . T.unpack
 
 data SomeObject = forall a. (Object a) => SomeObject (ForeignPtr a)
 

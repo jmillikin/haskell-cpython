@@ -38,6 +38,7 @@ module CPython.Protocols.Sequence
 	, fast
 	) where
 import Prelude hiding (repeat)
+import Data.Text (Text)
 import CPython.Internal
 import CPython.Types.ByteArray (ByteArray)
 import CPython.Types.Bytes (Bytes)
@@ -190,5 +191,5 @@ index self v =
 {# fun PySequence_Fast as fast
 	`Sequence self' =>
 	{ withObject* `self'
-	, withCString* `String'
+	, withText* `Text'
 	} -> `SomeSequence' stealObject* #}

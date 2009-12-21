@@ -22,6 +22,7 @@ module CPython.Reflection
 	, getFunctionName
 	, getFunctionDescription
 	) where
+import Data.Text (Text)
 import CPython.Internal
 
 #include <Python.h>
@@ -42,9 +43,9 @@ getFrame = {# call PyEval_GetFrame as ^#} >>= maybePeek peekObject
 {# fun PyEval_GetFuncName as getFunctionName
 	`Object func' =>
 	{ withObject* `func'
-	} -> `String' peekCString* #}
+	} -> `Text' peekText* #}
 
 {# fun PyEval_GetFuncDesc as getFunctionDescription
 	`Object func' =>
 	{ withObject* `func'
-	} -> `String' peekCString* #}
+	} -> `Text' peekText* #}

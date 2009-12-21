@@ -17,12 +17,13 @@
 module CPython.Types.Unicode
 	( Unicode
 	, unicodeType
-	, toString
-	, fromString
+	, toText
+	, fromText
 	, fromObject
 	, format
 	) where
 import Data.Char (chr, ord)
+import qualified Data.Text as T
 import CPython.Internal
 
 #include <Python.h>
@@ -48,18 +49,18 @@ peekUnicodeMode x = error $ "Invalid unicode mode: " ++ show x
 {# fun pure hscpython_unicode_mode as unicodeMode
 	{} -> `UnicodeMode' peekUnicodeMode #}
 
-toString :: Unicode -> IO String
-toString obj = withObject obj $ \ptr -> do
+toText :: Unicode -> IO T.Text
+toText obj = withObject obj $ \ptr -> do
 	buffer <- {# call hscpython_PyUnicode_AS_UNICODE #} ptr
 	size <- {# call hscpython_PyUnicode_GET_SIZE #} ptr
 	raw <- peekArray (fromIntegral size) buffer
 	case unicodeMode of
 		UCS2 -> undefined
-		UCS4 -> return $ map (chr . fromIntegral) raw
+		UCS4 -> return . T.pack $ map (chr . fromIntegral) raw
 
-fromString :: String -> IO Unicode
-fromString str = withBuffer fromUnicode >>= stealObject where
-	ords = map (fromIntegral . ord) str :: [CUInt]
+fromText :: T.Text -> IO Unicode
+fromText txt = withBuffer fromUnicode >>= stealObject where
+	ords = map (fromIntegral . ord) (T.unpack str) :: [CUInt]
 	withBuffer io = case unicodeMode of
 		UCS2 -> undefined
 		UCS4 -> withArrayLen ords (\len ptr -> io ptr (fromIntegral len))
