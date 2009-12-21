@@ -21,35 +21,36 @@ module CPython.System
 	, addWarnOption
 	, setPath
 	) where
+import Data.Text (Text)
 import CPython.Internal
 
 #include <Python.h>
 
 {# pointer *wchar_t as CWString nocode #}
 
-getObject :: String -> IO (Maybe SomeObject)
+getObject :: Text -> IO (Maybe SomeObject)
 getObject name =
-	withCString name $ \cstr -> do
+	withText name $ \cstr -> do
 	raw <- {# call PySys_GetObject as ^ #} cstr
 	maybePeek peekObject raw
 
 -- getFile
 
-setObject :: Object a => String -> Maybe a -> IO ()
+setObject :: Object a => Text -> Maybe a -> IO ()
 setObject name v =
+	withText name $ \cstr ->
 	maybeWith withObject v $ \vPtr ->
-	withCString name $ \cstr ->
 	{# call PySys_SetObject as ^ #} cstr vPtr
 	>>= checkStatusCode
 
 {# fun PySys_ResetWarnOptions as resetWarnOptions
 	{} -> `()' id #}
 
-addWarnOption :: String -> IO ()
+addWarnOption :: Text -> IO ()
 addWarnOption str =
-	withCWString str $ \cwstr ->
+	withTextW str $ \cwstr ->
 	{# call PySys_AddWarnOption as ^ #} cwstr
 
 {# fun PySys_SetPath as setPath
-	{ withCWString* `String'
+	{ withTextW* `Text'
 	} -> `()' id #}

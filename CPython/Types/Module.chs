@@ -23,14 +23,15 @@ module CPython.Types.Module
 	, getFilename
 	, addObject
 	, addIntegerConstant
-	, addStringConstant
+	, addTextConstant
 	, importModule
 	, reload
 	) where
 import Prelude hiding (fromInteger)
+import Data.Text (Text)
 import CPython.Internal hiding (new)
 import CPython.Types.Integer (fromInteger)
-import CPython.Types.Unicode (fromString)
+import CPython.Types.Unicode (fromText)
 
 #include <Python.h>
 #include <hscpython-shim.h>
@@ -44,7 +45,7 @@ instance Object Module where
 	{} -> `Type' peekStaticObject* #}
 
 {# fun PyModule_New as new
-	{ withCString* `String'
+	{ withText* `Text'
 	} -> `Module' stealObject* #}
 
 {# fun PyModule_GetDict as getDictionary
@@ -53,28 +54,28 @@ instance Object Module where
 
 {# fun PyModule_GetName as getName
 	{ withObject* `Module'
-	} -> `String' peekCString* #}
+	} -> `Text' peekText* #}
 
 {# fun PyModule_GetFilename as getFilename
 	{ withObject* `Module'
-	} -> `String' peekCString* #}
+	} -> `Text' peekText* #}
 
 {# fun PyModule_AddObject as addObject
 	`Object value' =>
 	{ withObject* `Module'
-	, withCString* `String'
+	, withText* `Text'
 	, withObject* `value'
 	} -> `()' checkStatusCode* #}
 
-addIntegerConstant :: Module -> String -> Integer -> IO ()
+addIntegerConstant :: Module -> Text -> Integer -> IO ()
 addIntegerConstant m name value = fromInteger value >>= addObject m name
 
-addStringConstant :: Module -> String -> String -> IO ()
-addStringConstant m name value = fromString value >>= addObject m name
+addTextConstant :: Module -> Text -> Text -> IO ()
+addTextConstant m name value = fromText value >>= addObject m name
 
-importModule :: String -> IO Module
+importModule :: Text -> IO Module
 importModule name = do
-	pyName <- fromString name
+	pyName <- fromText name
 	withObject pyName $ \namePtr ->
 		{# call PyImport_Import as ^ #} namePtr
 		>>= stealObject

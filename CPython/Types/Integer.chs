@@ -22,6 +22,7 @@ module CPython.Types.Integer
 	) where
 import Prelude hiding (Integer, toInteger, fromInteger)
 import qualified Prelude as Prelude
+import qualified Data.Text as T
 import CPython.Internal
 import qualified CPython.Types.Unicode as U
 import qualified CPython.Protocols.Object as O
@@ -47,7 +48,7 @@ toInteger py = do
 		return (long, overflow))
 	if overflow == 0
 		then return $ Prelude.toInteger long
-		else fmap read $ U.toString =<< O.string py
+		else fmap (read . T.unpack) $ U.toText =<< O.string py
 
 fromInteger :: Prelude.Integer -> IO Integer
 fromInteger int = do

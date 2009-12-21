@@ -32,6 +32,7 @@ module CPython
 	, getBuildInfo
 	, getPythonHome
 	) where
+import Data.Text (Text)
 import CPython.Internal
 
 #include <Python.h>
@@ -61,38 +62,38 @@ endInterpreter (ThreadState ptr) =
 	{# call Py_EndInterpreter as ^ #} $ castPtr ptr
 
 {# fun Py_GetProgramName as getProgramName
-	{} -> `String' peekCWString* #}
+	{} -> `Text' peekTextW* #}
 
--- setProgramName :: String -> IO ()
+-- setProgramName :: Text -> IO ()
 
 {# fun Py_GetPrefix as getPrefix
-	{} -> `String' peekCWString* #}
+	{} -> `Text' peekTextW* #}
 
 {# fun Py_GetExecPrefix as getExecPrefix
-	{} -> `String' peekCWString* #}
+	{} -> `Text' peekTextW* #}
 
 {# fun Py_GetProgramFullPath as getProgramFullPath
-	{} -> `String' peekCWString* #}
+	{} -> `Text' peekTextW* #}
 
 {# fun Py_GetPath as getPath
-	{} -> `String' peekCWString* #}
+	{} -> `Text' peekTextW* #}
 
 {# fun Py_GetVersion as getVersion
-	{} -> `String' #}
+	{} -> `Text' peekText* #}
 
 {# fun Py_GetPlatform as getPlatform
-	{} -> `String' #}
+	{} -> `Text' peekText* #}
 
 {# fun Py_GetCopyright as getCopyright
-	{} -> `String' #}
+	{} -> `Text' peekText* #}
 
 {# fun Py_GetCompiler as getCompiler
-	{} -> `String' #}
+	{} -> `Text' peekText* #}
 
 {# fun Py_GetBuildInfo as getBuildInfo
-	{} -> `String' #}
+	{} -> `Text' peekText* #}
 
--- setPythonHome :: String -> IO ()
+-- setPythonHome :: Text -> IO ()
 
 {# fun Py_GetPythonHome as getPythonHome
-	{} -> `String' peekCWString* #}
+	{} -> `Text' peekTextW* #}
