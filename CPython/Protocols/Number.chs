@@ -61,7 +61,6 @@ import CPython.Types.Float (Float)
 import CPython.Types.Integer (Integer)
 import CPython.Types.Unicode (Unicode)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 data SomeNumber = forall a. (Number a) => SomeNumber (ForeignPtr a)

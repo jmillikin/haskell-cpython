@@ -26,7 +26,6 @@ module CPython.Types.Tuple
 	) where
 import CPython.Internal hiding (new)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 {# fun pure hscpython_PyTuple_Type as tupleType

@@ -20,7 +20,6 @@ module CPython.Types.Code
 	) where
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Code = Code (ForeignPtr Code)

@@ -28,7 +28,6 @@ module CPython.Protocols.Mapping
 import CPython.Internal
 import CPython.Types.Dictionary (Dictionary)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 instance Mapping Dictionary where

@@ -24,7 +24,7 @@ module CPython.System
 import Data.Text (Text)
 import CPython.Internal
 
-#include <Python.h>
+#include <hscpython-shim.h>
 
 getObject :: Text -> IO (Maybe SomeObject)
 getObject name =
@@ -47,11 +47,11 @@ setObject name v =
 addWarnOption :: Text -> IO ()
 addWarnOption str = withTextW str pySysAddWarnOption
 
-foreign import ccall safe "Python.h PySys_AddWarnOption"
+foreign import ccall safe "hscpython-shim.h PySys_AddWarnOption"
 	pySysAddWarnOption :: CWString -> IO ()
 
 setPath :: Text -> IO ()
 setPath path = withTextW path pySysSetPath
 
-foreign import ccall safe "Python.h PySys_SetPath"
+foreign import ccall safe "hscpython-shim.h PySys_SetPath"
 	pySysSetPath :: CWString -> IO ()

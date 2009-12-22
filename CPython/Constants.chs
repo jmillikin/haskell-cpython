@@ -24,7 +24,6 @@ module CPython.Constants
 	) where
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 {# fun hscpython_Py_None as none

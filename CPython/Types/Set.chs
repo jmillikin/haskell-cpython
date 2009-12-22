@@ -30,7 +30,6 @@ module CPython.Types.Set
 	) where
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 class Object a => AnySet a

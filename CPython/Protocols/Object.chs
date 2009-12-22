@@ -51,7 +51,6 @@ import CPython.Internal
 import qualified CPython.Types.Unicode as U
 import qualified CPython.Types.Bytes as B
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 {# fun PyObject_HasAttr as hasAttribute

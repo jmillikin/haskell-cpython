@@ -21,7 +21,6 @@ module CPython.Types.Type
 	) where
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 {# fun pure hscpython_PyType_Type as typeType

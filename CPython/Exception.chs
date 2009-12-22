@@ -19,5 +19,4 @@ module CPython.Exception
 	) where
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>

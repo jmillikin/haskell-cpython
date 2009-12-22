@@ -26,7 +26,6 @@ module CPython.Types.Iterator
 import CPython.Internal
 import CPython.Protocols.Sequence (Sequence)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype SequenceIterator = SequenceIterator (ForeignPtr SequenceIterator)
