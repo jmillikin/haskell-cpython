@@ -114,8 +114,47 @@ Py_UNICODE *hscpython_PyUnicode_AsUnicode (PyObject *o)
 PyObject *hscpython_PyUnicode_FromUnicode (Py_UNICODE *u, Py_ssize_t size)
 { return PyUnicode_FromUnicode (u, size); }
 
+PyObject *hscpython_PyUnicode_FromEncodedObject (PyObject *o, const char *enc, const char *err)
+{ return PyUnicode_FromEncodedObject (o, enc, err); }
+
+PyObject *hscpython_PyUnicode_AsEncodedString (PyObject *o, const char *enc, const char *err)
+{ return PyUnicode_AsEncodedString (o, enc, err); }
+
 PyObject *hscpython_PyUnicode_FromObject (PyObject *o)
 { return PyUnicode_FromObject (o); }
 
+PyObject *hscpython_PyUnicode_Decode (const char *s, Py_ssize_t len, const char *enc, const char *err)
+{ return PyUnicode_Decode (s, len, enc, err); }
+
+PyObject *hscpython_PyUnicode_Concat (PyObject *l, PyObject *r)
+{ return PyUnicode_Concat (l, r); }
+
+PyObject *hscpython_PyUnicode_Split (PyObject *s, PyObject *sep, Py_ssize_t max)
+{ return PyUnicode_Split (s, sep, max); }
+
+PyObject *hscpython_PyUnicode_Splitlines (PyObject *s, int keep)
+{ return PyUnicode_Splitlines (s, keep); }
+
+PyObject *hscpython_PyUnicode_Translate (PyObject *str, PyObject *table, const char *err)
+{ return PyUnicode_Translate (str, table, err); }
+
+PyObject *hscpython_PyUnicode_Join (PyObject *sep, PyObject *seq)
+{ return PyUnicode_Join (sep, seq); }
+
+int hscpython_PyUnicode_Tailmatch (PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int dir)
+{ return PyUnicode_Tailmatch (str, substr, start, end, dir); }
+
+Py_ssize_t hscpython_PyUnicode_Find (PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end, int dir)
+{ return PyUnicode_Find (str, substr, start, end, dir); }
+
+Py_ssize_t hscpython_PyUnicode_Count (PyObject *str, PyObject *substr, Py_ssize_t start, Py_ssize_t end)
+{ return PyUnicode_Count (str, substr, start, end); }
+
+PyObject *hscpython_PyUnicode_Replace (PyObject *str, PyObject *substr, PyObject *replstr, Py_ssize_t max)
+{ return PyUnicode_Replace (str, substr, replstr, max); }
+
 PyObject *hscpython_PyUnicode_Format (PyObject *format, PyObject *args)
 { return PyUnicode_Format (format, args); }
+
+int hscpython_PyUnicode_Contains (PyObject *a, PyObject *b)
+{ return PyUnicode_Contains (a, b); }
