@@ -35,7 +35,7 @@ module CPython
 import Data.Text (Text)
 import CPython.Internal
 
-#include <Python.h>
+#include <hscpython-shim.h>
 
 {# fun Py_Initialize as initialize
 	{} -> `()' id #}
@@ -64,31 +64,31 @@ endInterpreter (ThreadState ptr) =
 getProgramName :: IO Text
 getProgramName = pyGetProgramName >>= peekTextW
 
-foreign import ccall safe "Python.h Py_GetProgramName"
+foreign import ccall safe "hscpython-shim.h Py_GetProgramName"
 	pyGetProgramName :: IO CWString
 
 getPrefix :: IO Text
 getPrefix = pyGetPrefix >>= peekTextW
 
-foreign import ccall safe "Python.h Py_GetPrefix"
+foreign import ccall safe "hscpython-shim.h Py_GetPrefix"
 	pyGetPrefix :: IO CWString
 
 getExecPrefix :: IO Text
 getExecPrefix = pyGetExecPrefix >>= peekTextW
 
-foreign import ccall safe "Python.h Py_GetExecPrefix"
+foreign import ccall safe "hscpython-shim.h Py_GetExecPrefix"
 	pyGetExecPrefix :: IO CWString
 
 getProgramFullPath :: IO Text
 getProgramFullPath = pyGetProgramFullPath >>= peekTextW
 
-foreign import ccall safe "Python.h Py_GetProgramFullPath"
+foreign import ccall safe "hscpython-shim.h Py_GetProgramFullPath"
 	pyGetProgramFullPath :: IO CWString
 
 getPath :: IO Text
 getPath = pyGetPath >>= peekTextW
 
-foreign import ccall safe "Python.h Py_GetPath"
+foreign import ccall safe "hscpython-shim.h Py_GetPath"
 	pyGetPath :: IO CWString
 
 {# fun Py_GetVersion as getVersion
@@ -111,5 +111,5 @@ foreign import ccall safe "Python.h Py_GetPath"
 getPythonHome :: IO Text
 getPythonHome = pyGetPythonHome >>= peekTextW
 
-foreign import ccall safe "Python.h Py_GetPythonHome"
+foreign import ccall safe "hscpython-shim.h Py_GetPythonHome"
 	pyGetPythonHome :: IO CWString

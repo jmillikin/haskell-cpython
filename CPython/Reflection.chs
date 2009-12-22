@@ -25,7 +25,6 @@ module CPython.Reflection
 import Data.Text (Text)
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 {# fun PyEval_GetBuiltins as getBuiltins

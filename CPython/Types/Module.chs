@@ -33,7 +33,6 @@ import CPython.Internal hiding (new)
 import CPython.Types.Integer (fromInteger)
 import CPython.Types.Unicode (fromText)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Module = Module (ForeignPtr Module)

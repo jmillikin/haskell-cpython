@@ -61,7 +61,6 @@ import Data.Typeable (Typeable)
 import Foreign
 import Foreign.C
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 cToBool :: CInt -> Bool

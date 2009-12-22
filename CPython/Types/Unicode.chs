@@ -52,7 +52,6 @@ import qualified Data.Text.Foreign as TF
 import CPython.Internal
 import CPython.Types.Bytes (Bytes)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Unicode = Unicode (ForeignPtr Unicode)

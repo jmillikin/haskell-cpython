@@ -27,7 +27,6 @@ import CPython.Internal
 import qualified CPython.Types.Unicode as U
 import qualified CPython.Protocols.Object as O
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Integer = Integer (ForeignPtr Integer)

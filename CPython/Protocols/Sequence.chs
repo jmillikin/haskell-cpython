@@ -44,7 +44,6 @@ import CPython.Types.ByteArray (ByteArray)
 import CPython.Types.Bytes (Bytes)
 import CPython.Types.Unicode (Unicode)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 data SomeSequence = forall a. (Sequence a) => SomeSequence (ForeignPtr a)

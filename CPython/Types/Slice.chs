@@ -23,7 +23,6 @@ module CPython.Types.Slice
 import Prelude hiding (length)
 import CPython.Internal hiding (new)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Slice = Slice (ForeignPtr Slice)

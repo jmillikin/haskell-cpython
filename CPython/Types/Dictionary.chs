@@ -35,7 +35,6 @@ module CPython.Types.Dictionary
 	) where
 import CPython.Internal hiding (new)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 {# fun pure hscpython_PyDict_Type as dictionaryType

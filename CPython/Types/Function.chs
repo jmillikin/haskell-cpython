@@ -32,7 +32,6 @@ import CPython.Internal hiding (new)
 import CPython.Types.Code (Code)
 import qualified CPython.Constants as Const
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Function = Function (ForeignPtr Function)

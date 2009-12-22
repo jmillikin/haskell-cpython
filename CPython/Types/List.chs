@@ -33,7 +33,6 @@ module CPython.Types.List
 import Prelude hiding (reverse)
 import CPython.Internal hiding (new)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 {# fun pure hscpython_PyList_Type as listType

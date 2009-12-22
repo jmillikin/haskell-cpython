@@ -23,7 +23,6 @@ module CPython.Types.Cell
 	) where
 import CPython.Internal hiding (new)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Cell = Cell (ForeignPtr Cell)

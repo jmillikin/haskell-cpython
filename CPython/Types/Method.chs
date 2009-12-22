@@ -23,7 +23,6 @@ module CPython.Types.Method
 	) where
 import CPython.Internal hiding (new)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Method = Method (ForeignPtr Method)

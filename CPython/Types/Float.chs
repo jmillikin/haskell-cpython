@@ -23,7 +23,6 @@ module CPython.Types.Float
 import Prelude hiding (Float)
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Float = Float (ForeignPtr Float)

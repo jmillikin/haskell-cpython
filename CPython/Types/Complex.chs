@@ -23,7 +23,6 @@ module CPython.Types.Complex
 import qualified Data.Complex as C
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Complex = Complex (ForeignPtr Complex)

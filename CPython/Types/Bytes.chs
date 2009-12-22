@@ -27,7 +27,6 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Unsafe as B
 import CPython.Internal
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype Bytes = Bytes (ForeignPtr Bytes)

@@ -22,7 +22,6 @@ module CPython.Types.InstanceMethod
 	) where
 import CPython.Internal hiding (new)
 
-#include <Python.h>
 #include <hscpython-shim.h>
 
 newtype InstanceMethod = InstanceMethod (ForeignPtr InstanceMethod)
