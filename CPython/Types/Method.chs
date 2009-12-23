@@ -26,9 +26,13 @@ import CPython.Internal hiding (new)
 #include <hscpython-shim.h>
 
 newtype Method = Method (ForeignPtr Method)
+
 instance Object Method where
 	toObject (Method x) = SomeObject x
 	fromForeignPtr = Method
+
+instance Concrete Method where
+	concreteType _ = methodType
 
 {# fun pure hscpython_PyMethod_Type as methodType
 	{} -> `Type' peekStaticObject* #}

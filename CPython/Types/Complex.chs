@@ -26,9 +26,13 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype Complex = Complex (ForeignPtr Complex)
+
 instance Object Complex where
 	toObject (Complex x) = SomeObject x
 	fromForeignPtr = Complex
+
+instance Concrete Complex where
+	concreteType _ = complexType
 
 {# fun pure hscpython_PyComplex_Type as complexType
 	{} -> `Type' peekStaticObject* #}

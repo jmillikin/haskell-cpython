@@ -35,9 +35,13 @@ import qualified CPython.Constants as Const
 #include <hscpython-shim.h>
 
 newtype Function = Function (ForeignPtr Function)
+
 instance Object Function where
 	toObject (Function x) = SomeObject x
 	fromForeignPtr = Function
+
+instance Concrete Function where
+	concreteType _ = functionType
 
 {# fun pure hscpython_PyFunction_Type as functionType
 	{} -> `Type' peekStaticObject* #}

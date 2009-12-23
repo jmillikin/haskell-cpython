@@ -36,9 +36,13 @@ import CPython.Types.Unicode (fromText)
 #include <hscpython-shim.h>
 
 newtype Module = Module (ForeignPtr Module)
+
 instance Object Module where
 	toObject (Module x) = SomeObject x
 	fromForeignPtr = Module
+
+instance Concrete Module where
+	concreteType _ = moduleType
 
 {# fun pure hscpython_PyModule_Type as moduleType
 	{} -> `Type' peekStaticObject* #}

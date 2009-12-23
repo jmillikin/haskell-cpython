@@ -37,6 +37,9 @@ import CPython.Internal hiding (new)
 
 #include <hscpython-shim.h>
 
+instance Concrete Dictionary where
+	concreteType _ = dictionaryType
+
 {# fun pure hscpython_PyDict_Type as dictionaryType
 	{} -> `Type' peekStaticObject* #}
 

@@ -55,9 +55,13 @@ import CPython.Types.Bytes (Bytes)
 #include <hscpython-shim.h>
 
 newtype Unicode = Unicode (ForeignPtr Unicode)
+
 instance Object Unicode where
 	toObject (Unicode x) = SomeObject x
 	fromForeignPtr = Unicode
+
+instance Concrete Unicode where
+	concreteType _ = unicodeType
 
 type Encoding = T.Text
 data ErrorHandling

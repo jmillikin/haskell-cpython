@@ -31,9 +31,13 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype ByteArray = ByteArray (ForeignPtr ByteArray)
+
 instance Object ByteArray where
 	toObject (ByteArray x) = SomeObject x
 	fromForeignPtr = ByteArray
+
+instance Concrete ByteArray where
+	concreteType _ = byteArrayType
 
 {# fun pure hscpython_PyByteArray_Type as byteArrayType
 	{} -> `Type' peekStaticObject* #}

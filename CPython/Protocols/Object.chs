@@ -16,8 +16,10 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module CPython.Protocols.Object
 	( Object
+	, Concrete
 	, SomeObject
 	, toObject
+	, cast
 	, hasAttribute
 	, getAttribute
 	, setAttribute
@@ -52,6 +54,15 @@ import qualified CPython.Types.Unicode as U
 import qualified CPython.Types.Bytes as B
 
 #include <hscpython-shim.h>
+
+cast :: (Object a, Concrete b) => a -> IO (Maybe b)
+cast obj = do
+	let castObj = case toObject obj of
+		SomeObject ptr -> fromForeignPtr $ castForeignPtr ptr
+	validCast <- isInstance obj $ concreteType castObj
+	return $ if validCast
+		then Just castObj
+		else Nothing
 
 {# fun PyObject_HasAttr as hasAttribute
 	`Object self' =>

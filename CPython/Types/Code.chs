@@ -23,9 +23,13 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype Code = Code (ForeignPtr Code)
+
 instance Object Code where
 	toObject (Code x) = SomeObject x
 	fromForeignPtr = Code
+
+instance Concrete Code where
+	concreteType _ = codeType
 
 {# fun pure hscpython_PyCode_Type as codeType
 	{} -> `Type' peekStaticObject* #}

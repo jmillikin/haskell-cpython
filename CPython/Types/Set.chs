@@ -35,14 +35,22 @@ import CPython.Internal
 class Object a => AnySet a
 
 newtype Set = Set (ForeignPtr Set)
+
 instance Object Set where
 	toObject (Set x) = SomeObject x
 	fromForeignPtr = Set
 
+instance Concrete Set where
+	concreteType _ = setType
+
 newtype FrozenSet = FrozenSet (ForeignPtr FrozenSet)
+
 instance Object FrozenSet where
 	toObject (FrozenSet x) = SomeObject x
 	fromForeignPtr = FrozenSet
+
+instance Concrete FrozenSet where
+	concreteType _ = frozenSetType
 
 instance AnySet Set
 instance AnySet FrozenSet
