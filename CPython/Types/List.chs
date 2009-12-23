@@ -35,6 +35,9 @@ import CPython.Internal hiding (new)
 
 #include <hscpython-shim.h>
 
+instance Concrete List where
+	concreteType _ = listType
+
 {# fun pure hscpython_PyList_Type as listType
 	{} -> `Type' peekStaticObject* #}
 

@@ -26,9 +26,13 @@ import CPython.Internal hiding (new)
 #include <hscpython-shim.h>
 
 newtype Cell = Cell (ForeignPtr Cell)
+
 instance Object Cell where
 	toObject (Cell x) = SomeObject x
 	fromForeignPtr = Cell
+
+instance Concrete Cell where
+	concreteType _ = cellType
 
 {# fun pure hscpython_PyCell_Type as cellType
 	{} -> `Type' peekStaticObject* #}

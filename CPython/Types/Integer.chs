@@ -30,9 +30,13 @@ import qualified CPython.Protocols.Object as O
 #include <hscpython-shim.h>
 
 newtype Integer = Integer (ForeignPtr Integer)
+
 instance Object Integer where
 	toObject (Integer x) = SomeObject x
 	fromForeignPtr = Integer
+
+instance Concrete Integer where
+	concreteType _ = integerType
 
 {# fun pure hscpython_PyLong_Type as integerType
 	{} -> `Type' peekStaticObject* #}

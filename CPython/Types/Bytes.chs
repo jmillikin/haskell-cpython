@@ -30,9 +30,13 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype Bytes = Bytes (ForeignPtr Bytes)
+
 instance Object Bytes where
 	toObject (Bytes x) = SomeObject x
 	fromForeignPtr = Bytes
+
+instance Concrete Bytes where
+	concreteType _ = bytesType
 
 {# fun pure hscpython_PyBytes_Type as bytesType
 	{} -> `Type' peekStaticObject* #}

@@ -26,9 +26,13 @@ import CPython.Internal hiding (new)
 #include <hscpython-shim.h>
 
 newtype Slice = Slice (ForeignPtr Slice)
+
 instance Object Slice where
 	toObject (Slice x) = SomeObject x
 	fromForeignPtr = Slice
+
+instance Concrete Slice where
+	concreteType _ = sliceType
 
 {# fun pure hscpython_PySlice_Type as sliceType
 	{} -> `Type' peekStaticObject* #}

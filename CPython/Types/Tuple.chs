@@ -28,6 +28,9 @@ import CPython.Internal hiding (new)
 
 #include <hscpython-shim.h>
 
+instance Concrete Tuple where
+	concreteType _ = tupleType
+
 {# fun pure hscpython_PyTuple_Type as tupleType
 	{} -> `Type' peekStaticObject* #}
 

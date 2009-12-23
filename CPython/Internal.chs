@@ -37,6 +37,7 @@ module CPython.Internal
 	
 	-- * Objects
 	, Object (..)
+	, Concrete (..)
 	, withObject
 	, peekObject
 	, peekStaticObject
@@ -88,6 +89,9 @@ data SomeObject = forall a. (Object a) => SomeObject (ForeignPtr a)
 class Object a where
 	toObject :: a -> SomeObject
 	fromForeignPtr :: ForeignPtr a -> a
+
+class Object a => Concrete a where
+	concreteType :: a -> Type
 
 instance Object SomeObject where
 	toObject = id

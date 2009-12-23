@@ -23,6 +23,9 @@ import CPython.Internal
 
 #include <hscpython-shim.h>
 
+instance Concrete Type where
+	concreteType _ = typeType
+
 {# fun pure hscpython_PyType_Type as typeType
 	{} -> `Type' peekStaticObject* #}
 

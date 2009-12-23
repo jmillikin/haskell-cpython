@@ -26,9 +26,13 @@ import CPython.Internal
 #include <hscpython-shim.h>
 
 newtype Float = Float (ForeignPtr Float)
+
 instance Object Float where
 	toObject (Float x) = SomeObject x
 	fromForeignPtr = Float
+
+instance Concrete Float where
+	concreteType _ = floatType
 
 {# fun pure hscpython_PyFloat_Type as floatType
 	{} -> `Type' peekStaticObject* #}

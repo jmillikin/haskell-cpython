@@ -29,14 +29,22 @@ import CPython.Protocols.Sequence (Sequence)
 #include <hscpython-shim.h>
 
 newtype SequenceIterator = SequenceIterator (ForeignPtr SequenceIterator)
+
 instance Object SequenceIterator where
 	toObject (SequenceIterator x) = SomeObject x
 	fromForeignPtr = SequenceIterator
 
+instance Concrete SequenceIterator where
+	concreteType _ = sequenceIteratorType
+
 newtype CallableIterator = CallableIterator (ForeignPtr CallableIterator)
+
 instance Object CallableIterator where
 	toObject (CallableIterator x) = SomeObject x
 	fromForeignPtr = CallableIterator
+
+instance Concrete CallableIterator where
+	concreteType _ = callableIteratorType
 
 {# fun pure hscpython_PySeqIter_Type as sequenceIteratorType
 	{} -> `Type' peekStaticObject* #}
