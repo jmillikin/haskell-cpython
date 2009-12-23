@@ -14,7 +14,7 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-module CPython.Exception
+module CPython.Types.Exception
 	( Exception (..)
 	) where
 import CPython.Internal
