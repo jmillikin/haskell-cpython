@@ -30,6 +30,7 @@ library
     CPython.Types.Code
     CPython.Types.Complex
     CPython.Types.Dictionary
+    CPython.Types.Exception
     CPython.Types.Float
     CPython.Types.Function
     CPython.Types.InstanceMethod
@@ -49,7 +50,6 @@ library
     CPython.Protocols.Object
     CPython.Protocols.Sequence
     CPython.Constants
-    CPython.Exception
     CPython.Reflection
     CPython.System
 
