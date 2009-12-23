@@ -15,21 +15,27 @@
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
 module CPython.Types.Iterator
-	( SequenceIterator
+	( Iterator
+	, SequenceIterator
 	, sequenceIteratorType
 	, sequenceIteratorNew
 	
 	, CallableIterator
 	, callableIteratorType
 	, callableIteratorNew
+	
+	, next
 	) where
 import CPython.Internal
 import CPython.Protocols.Sequence (Sequence)
 
 #include <hscpython-shim.h>
 
+class Object a => Iterator a
+
 newtype SequenceIterator = SequenceIterator (ForeignPtr SequenceIterator)
 
+instance Iterator SequenceIterator
 instance Object SequenceIterator where
 	toObject (SequenceIterator x) = SomeObject x
 	fromForeignPtr = SequenceIterator
@@ -39,6 +45,7 @@ instance Concrete SequenceIterator where
 
 newtype CallableIterator = CallableIterator (ForeignPtr CallableIterator)
 
+instance Iterator CallableIterator
 instance Object CallableIterator where
 	toObject (CallableIterator x) = SomeObject x
 	fromForeignPtr = CallableIterator
@@ -62,3 +69,14 @@ instance Concrete CallableIterator where
 	{ withObject* `callable'
 	, withObject* `sentinel'
 	} -> `CallableIterator' stealObject* #}
+
+next :: Iterator iter => iter -> IO (Maybe SomeObject)
+next iter =
+	withObject iter $ \iterPtr -> do
+	raw <- {# call PyIter_Next as ^ #} iterPtr
+	if raw == nullPtr
+		then do
+			err <- {# call PyErr_Occurred as ^ #}
+			exceptionIf $ err /= nullPtr
+			return Nothing
+		else fmap Just $ stealObject raw
