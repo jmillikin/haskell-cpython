@@ -14,7 +14,6 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-{-# LANGUAGE ExistentialQuantification #-}
 module CPython.Protocols.Sequence
 	( Sequence (..)
 	, SomeSequence
@@ -45,11 +44,6 @@ import CPython.Types.Bytes (Bytes)
 import CPython.Types.Unicode (Unicode)
 
 #include <hscpython-shim.h>
-
-data SomeSequence = forall a. (Sequence a) => SomeSequence (ForeignPtr a)
-
-class Object a => Sequence a where
-	toSequence :: a -> SomeSequence
 
 instance Object SomeSequence where
 	toObject (SomeSequence x) = SomeObject x

@@ -50,9 +50,11 @@ module CPython.Internal
 	, checkStatusCode
 	, checkBoolReturn
 	
-	-- * Mappings
+	-- * Other classes
 	, Mapping (..)
 	, SomeMapping (..)
+	, Sequence (..)
+	, SomeSequence (..)
 	) where
 import Control.Applicative ((<$>))
 import qualified Control.Exception as E
@@ -177,9 +179,7 @@ data SomeMapping = forall a. (Mapping a) => SomeMapping (ForeignPtr a)
 class Object a => Mapping a where
 	toMapping :: a -> SomeMapping
 
-instance Object SomeMapping where
-	toObject (SomeMapping x) = SomeObject x
-	fromForeignPtr = SomeMapping
+data SomeSequence = forall a. (Sequence a) => SomeSequence (ForeignPtr a)
 
-instance Mapping SomeMapping where
-	toMapping = id
+class Object a => Sequence a where
+	toSequence :: a -> SomeSequence
