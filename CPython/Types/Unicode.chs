@@ -156,7 +156,7 @@ split = undefined
 	} -> `Unicode' stealObject* #}
 
 {# fun hscpython_PyUnicode_Join as join
-	`Object seq' =>
+	`Sequence seq' =>
 	{ withObject* `Unicode'
 	, withObject* `seq'
 	} -> `Unicode' stealObject* #}

@@ -14,7 +14,6 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
-{-# LANGUAGE ExistentialQuantification #-}
 module CPython.Protocols.Mapping
 	( Mapping (..)
 	, SomeMapping
@@ -29,6 +28,13 @@ import CPython.Internal
 import CPython.Types.Dictionary (Dictionary)
 
 #include <hscpython-shim.h>
+
+instance Object SomeMapping where
+	toObject (SomeMapping x) = SomeObject x
+	fromForeignPtr = SomeMapping
+
+instance Mapping SomeMapping where
+	toMapping = id
 
 instance Mapping Dictionary where
 	toMapping = unsafeCastToMapping
