@@ -18,7 +18,7 @@ module CPython.Protocols.Sequence
 	( Sequence (..)
 	, SomeSequence
 	, castToSequence
-	, size
+	, length
 	, append
 	, repeat
 	, inPlaceAppend
@@ -36,7 +36,7 @@ module CPython.Protocols.Sequence
 	, toTuple
 	, fast
 	) where
-import Prelude hiding (repeat)
+import Prelude hiding (repeat, length)
 import Data.Text (Text)
 import CPython.Internal
 import CPython.Types.ByteArray (ByteArray)
@@ -81,10 +81,11 @@ castToSequence obj =
 		then Just $ unsafeCastToSequence obj
 		else Nothing
 
-{# fun PySequence_Size as size
-	`Sequence self' =>
-	{ withObject* `self'
-	} -> `Integer' fromIntegral #}
+length :: Sequence self => self -> IO Integer
+length self = withObject self $ \ptr -> do
+	cRes <- {# call PyMapping_Size as ^ #} ptr
+	exceptionIf $ cRes == -1
+	return $ toInteger cRes
 
 {# fun PySequence_Concat as append
 	`(Sequence a, Sequence b)' =>

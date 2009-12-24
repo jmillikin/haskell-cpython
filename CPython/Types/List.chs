@@ -19,7 +19,7 @@ module CPython.Types.List
 	, listType
 	, new
 	, pack
-	, size
+	, length
 	, getItem
 	, setItem
 	, insert
@@ -30,7 +30,8 @@ module CPython.Types.List
 	, reverse
 	, toTuple
 	) where
-import Prelude hiding (reverse)
+import Prelude hiding (reverse, length)
+import qualified Prelude as Prelude
 import CPython.Internal hiding (new)
 
 #include <hscpython-shim.h>
@@ -47,7 +48,7 @@ instance Concrete List where
 
 pack :: [SomeObject] -> IO List
 pack xs = do
-	list <- new . toInteger $ length xs
+	list <- new . toInteger $ Prelude.length xs
 	setItems list 0 xs
 	return list
 
@@ -55,7 +56,7 @@ setItems :: List -> Integer -> [SomeObject] -> IO ()
 setItems _ _ [] = return ()
 setItems l idx (x:xs) = setItem l idx x >> setItems l (idx + 1) xs
 
-{# fun PyList_Size as size
+{# fun PyList_Size as length
 	{ withObject* `List'
 	} -> `Integer' toInteger #}
 
