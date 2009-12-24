@@ -23,7 +23,7 @@ module CPython.Types.Unicode
 	, unicodeType
 	, toText
 	, fromText
-	, size
+	, length
 	, fromEncodedObject
 	, fromObject
 	, encode
@@ -45,6 +45,7 @@ module CPython.Types.Unicode
 	, format
 	, contains
 	) where
+import Prelude hiding (length)
 import Control.Exception (ErrorCall (..), throwIO)
 import Data.Char (chr, ord)
 import qualified Data.Text as T
@@ -82,12 +83,12 @@ withErrors errors = withCString $ case errors of
 toText :: Unicode -> IO T.Text
 toText obj = withObject obj $ \ptr -> do
 	buffer <- {# call hscpython_PyUnicode_AsUnicode #} ptr
-	size' <- {# call hscpython_PyUnicode_GetSize #} ptr
+	size <- {# call hscpython_PyUnicode_GetSize #} ptr
 #ifdef Py_UNICODE_WIDE
 	raw <- peekArray (fromIntegral size) buffer
 	return . T.pack $ map (chr . fromIntegral) raw
 #else
-	TF.fromPtr (castPtr buffer) (fromIntegral size')
+	TF.fromPtr (castPtr buffer) (fromIntegral size)
 #endif
 
 fromText :: T.Text -> IO Unicode
@@ -103,7 +104,7 @@ fromText str = withBuffer fromUnicode >>= stealObject where
 	withBuffer = TF.useAsPtr str
 #endif
 
-{# fun hscpython_PyUnicode_GetSize as size
+{# fun hscpython_PyUnicode_GetSize as length
 	{ withObject* `Unicode'
 	} -> `Integer' toInteger #}
 

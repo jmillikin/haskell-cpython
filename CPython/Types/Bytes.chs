@@ -20,9 +20,10 @@ module CPython.Types.Bytes
 	, toByteString
 	, fromByteString
 	, fromObject
-	, size
+	, length
 	, append
 	) where
+import Prelude hiding (length)
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Unsafe as B
 import CPython.Internal
@@ -63,7 +64,7 @@ fromByteString bytes = let
 	{ withObject* `self'
 	} -> `Bytes' stealObject* #}
 
-{# fun PyBytes_Size as size
+{# fun PyBytes_Size as length
 	{ withObject* `Bytes'
 	} -> `Integer' toInteger #}
 

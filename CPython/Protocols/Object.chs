@@ -41,14 +41,13 @@ module CPython.Protocols.Object
 	, not
 	, getType
 	, typeCheck
-	, size
 	, getItem
 	, setItem
 	, deleteItem
 	, dir
 	, getIterator
 	) where
-import Prelude hiding (Ordering (..), compare, not)
+import Prelude hiding (Ordering (..), compare, not, length)
 import CPython.Internal
 import qualified CPython.Types.Unicode as U
 import qualified CPython.Types.Bytes as B
@@ -193,12 +192,6 @@ hash self = withObject self $ \ptr -> do
 	{ withObject* `self'
 	, withObject* `Type'
 	} -> `Bool' #}
-
-size :: Object self => self -> IO Integer
-size self = withObject self $ \ptr -> do
-	cRes <- {# call PyObject_Size as ^ #} ptr
-	exceptionIf $ cRes == -1
-	return $ toInteger cRes
 
 {# fun PyObject_GetItem as getItem
 	`(Object self, Object key)' =>

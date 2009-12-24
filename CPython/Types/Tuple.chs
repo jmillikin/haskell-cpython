@@ -19,11 +19,13 @@ module CPython.Types.Tuple
 	, tupleType
 	, new
 	, pack
-	, size
+	, length
 	, getItem
 	, getSlice
 	, setItem
 	) where
+import Prelude hiding (length)
+import qualified Prelude as Prelude
 import CPython.Internal hiding (new)
 
 #include <hscpython-shim.h>
@@ -40,7 +42,7 @@ instance Concrete Tuple where
 
 pack :: [SomeObject] -> IO Tuple
 pack xs = do
-	tuple <- new . toInteger $ length xs
+	tuple <- new . toInteger $ Prelude.length xs
 	setItems tuple 0 xs
 	return tuple
 
@@ -48,7 +50,7 @@ setItems :: Tuple -> Integer -> [SomeObject] -> IO ()
 setItems _ _ [] = return ()
 setItems t idx (x:xs) = setItem t idx x >> setItems t (idx + 1) xs
 
-{# fun PyTuple_Size as size
+{# fun PyTuple_Size as length
 	{ withObject* `Tuple'
 	} -> `Integer' toInteger #}
 
