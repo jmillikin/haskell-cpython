@@ -17,6 +17,7 @@
 module CPython.System
 	( getObject
 	, setObject
+	, deleteObject
 	, resetWarnOptions
 	, addWarnOption
 	, setPath
@@ -34,11 +35,17 @@ getObject name =
 
 -- getFile
 
-setObject :: Object a => Text -> Maybe a -> IO ()
+setObject :: Object a => Text -> a -> IO ()
 setObject name v =
 	withText name $ \cstr ->
-	maybeWith withObject v $ \vPtr ->
+	withObject v $ \vPtr ->
 	{# call PySys_SetObject as ^ #} cstr vPtr
+	>>= checkStatusCode
+
+deleteObject :: Text -> IO ()
+deleteObject name =
+	withText name $ \cstr ->
+	{# call PySys_SetObject as ^ #} cstr nullPtr
 	>>= checkStatusCode
 
 {# fun PySys_ResetWarnOptions as resetWarnOptions
