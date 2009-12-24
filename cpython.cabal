@@ -1,7 +1,7 @@
 name: cpython
 version: 3.1.0
 synopsis: Bindings for libpython
-license: GPL
+license: GPL-3
 license-file: license.txt
 author: John Millikin
 maintainer: jmillikin@gmail.com
