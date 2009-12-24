@@ -164,7 +164,8 @@ exceptionIf True =
 	alloca $ \pType ->
 	alloca $ \pValue ->
 	alloca $ \pTrace -> do
-		{# call PyErr_Fetch as pyErr_Fetch #} pType pValue pTrace
+		{# call PyErr_Fetch as ^ #} pType pValue pTrace
+		{# call PyErr_NormalizeException as ^ #} pType pValue pTrace
 		eType <- unsafeStealObject pType
 		eValue <- maybePeek unsafeStealObject pValue
 		eTrace <- maybePeek unsafeStealObject pTrace
