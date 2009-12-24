@@ -60,6 +60,7 @@ import CPython.Types.Complex (Complex)
 import CPython.Types.Float (Float)
 import CPython.Types.Integer (Integer)
 import CPython.Types.Unicode (Unicode)
+import CPython.Types.Set (Set, FrozenSet)
 
 #include <hscpython-shim.h>
 
@@ -82,6 +83,13 @@ instance Number Float where
 	toNumber = unsafeCastToNumber
 
 instance Number Complex where
+	toNumber = unsafeCastToNumber
+
+-- lol wut
+instance Number Set where
+	toNumber = unsafeCastToNumber
+
+instance Number FrozenSet where
 	toNumber = unsafeCastToNumber
 
 unsafeCastToNumber :: Object a => a -> SomeNumber
