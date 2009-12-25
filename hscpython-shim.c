@@ -187,3 +187,28 @@ PyObject *hscpython_PyUnicode_Format (PyObject *format, PyObject *args)
 
 int hscpython_PyUnicode_Contains (PyObject *a, PyObject *b)
 { return PyUnicode_Contains (a, b); }
+
+/* Lists */
+void hscpython_peek_list (PyObject *list, Py_ssize_t size, PyObject **objs)
+{
+	Py_ssize_t ii;
+	for (ii = 0; ii < size; ii++)
+	{
+		objs[ii] = PyList_GET_ITEM (list, ii);
+	}
+}
+
+PyObject *hscpython_poke_list (size_t count, PyObject **objs)
+{
+	PyObject *list;
+	size_t ii;
+	
+	if (!(list = PyList_New (count)))
+	{ return NULL; }
+	
+	for (ii = 0; ii < count; ii++)
+	{
+		PyList_SET_ITEM (list, ii, objs[ii]);
+	}
+	return list;
+}

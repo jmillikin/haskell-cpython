@@ -66,3 +66,7 @@ Py_ssize_t hscpython_PyUnicode_Count (PyObject *, PyObject *, Py_ssize_t, Py_ssi
 PyObject *hscpython_PyUnicode_Replace (PyObject *, PyObject *, PyObject *, Py_ssize_t);
 PyObject *hscpython_PyUnicode_Format (PyObject *, PyObject *);
 int hscpython_PyUnicode_Contains (PyObject *, PyObject *);
+
+/* Lists */
+void hscpython_peek_list (PyObject *, Py_ssize_t, PyObject **);
+PyObject *hscpython_poke_list (size_t, PyObject **);
