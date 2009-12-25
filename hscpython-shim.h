@@ -1,5 +1,9 @@
 #include <Python.h>
 
+/* Initialization helpers */
+void hscpython_SetProgramName (wchar_t *);
+void hscpython_SetPythonHome (wchar_t *);
+
 /* Object */
 void hscpython_Py_INCREF (PyObject *);
 void hscpython_Py_DECREF (PyObject *);

@@ -17,6 +17,35 @@
 
 #include <hscpython-shim.h>
 
+/* Initialization helpers */
+static wchar_t *program_name = NULL;
+static wchar_t *python_home = NULL;
+
+static wchar_t *strdupw (wchar_t *s)
+{
+	size_t len = 0;
+	wchar_t *orig = s, *new, *new0;
+	if (!s) { return s; }
+	
+	while (*(s++)) { len++; }
+	new = new0 = malloc (sizeof (wchar_t) * len);
+	s = orig;
+	while (*(new++) = *(s++)) {}
+	return new0;
+}
+
+void hscpython_SetProgramName (wchar_t *name)
+{
+	free (program_name);
+	program_name = strdupw (name);
+}
+
+void hscpython_SetPythonHome (wchar_t *home)
+{
+	free (python_home);
+	python_home = strdupw (home);
+}
+
 /* Object */
 void hscpython_Py_INCREF (PyObject *o)
 { Py_INCREF (o); }
