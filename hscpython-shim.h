@@ -70,3 +70,7 @@ int hscpython_PyUnicode_Contains (PyObject *, PyObject *);
 /* Lists */
 void hscpython_peek_list (PyObject *, Py_ssize_t, PyObject **);
 PyObject *hscpython_poke_list (size_t, PyObject **);
+
+/* Tuples */
+void hscpython_peek_tuple (PyObject *, Py_ssize_t, PyObject **);
+PyObject *hscpython_poke_tuple (size_t, PyObject **);

@@ -17,8 +17,8 @@
 module CPython.Types.Tuple
 	( Tuple
 	, tupleType
-	, new
-	, pack
+	, toTuple
+	, fromTuple
 	, length
 	, getItem
 	, getSlice
@@ -36,19 +36,21 @@ instance Concrete Tuple where
 {# fun pure hscpython_PyTuple_Type as tupleType
 	{} -> `Type' peekStaticObject* #}
 
-{# fun PyTuple_New as new
-	{ fromIntegral `Integer'
-	} -> `Tuple' stealObject* #}
+toTuple :: [SomeObject] -> IO Tuple
+toTuple xs =
+	mapWith withObject xs $ \ptrs ->
+	withArrayLen ptrs $ \count array ->
+	{# call hscpython_poke_tuple #} (fromIntegral count) array
+	>>= stealObject
 
-pack :: [SomeObject] -> IO Tuple
-pack xs = do
-	tuple <- new . toInteger $ Prelude.length xs
-	setItems tuple 0 xs
-	return tuple
-
-setItems :: Tuple -> Integer -> [SomeObject] -> IO ()
-setItems _ _ [] = return ()
-setItems t idx (x:xs) = setItem t idx x >> setItems t (idx + 1) xs
+fromTuple :: Tuple -> IO [SomeObject]
+fromTuple py =
+	withObject py $ \pyPtr ->
+	({# call PyTuple_Size as ^ #} pyPtr >>=) $ \size ->
+	let size' = fromIntegral size :: Int in
+	withArray (replicate size' nullPtr) $ \ptrs ->
+	{# call hscpython_peek_tuple #} pyPtr size ptrs >>
+	peekArray size' ptrs >>= mapM peekObject
 
 {# fun PyTuple_Size as length
 	{ withObject* `Tuple'

@@ -212,3 +212,28 @@ PyObject *hscpython_poke_list (size_t count, PyObject **objs)
 	}
 	return list;
 }
+
+/* Tuple */
+void hscpython_peek_tuple (PyObject *tuple, Py_ssize_t size, PyObject **objs)
+{
+	Py_ssize_t ii;
+	for (ii = 0; ii < size; ii++)
+	{
+		objs[ii] = PyTuple_GET_ITEM (tuple, ii);
+	}
+}
+
+PyObject *hscpython_poke_tuple (size_t count, PyObject **objs)
+{
+	PyObject *tuple;
+	size_t ii;
+	
+	if (!(tuple = PyTuple_New (count)))
+	{ return NULL; }
+	
+	for (ii = 0; ii < count; ii++)
+	{
+		PyTuple_SET_ITEM (tuple, ii, objs[ii]);
+	}
+	return tuple;
+}
