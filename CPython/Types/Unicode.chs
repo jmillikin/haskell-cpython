@@ -98,7 +98,7 @@ fromText str = withBuffer fromUnicode >>= stealObject where
 		ptr' = castPtr ptr
 		in {# call hscpython_PyUnicode_FromUnicode #} ptr' len'
 #ifdef Py_UNICODE_WIDE
-	ords = map (fromIntegral . ord) str :: [CUInt]
+	ords = map (fromIntegral . ord) (T.unpack str) :: [CUInt]
 	withBuffer = withArrayLen ords . flip
 #else
 	withBuffer = TF.useAsPtr str
