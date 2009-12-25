@@ -17,8 +17,8 @@
 module CPython.Types.Bytes
 	( Bytes
 	, bytesType
-	, toByteString
-	, fromByteString
+	, toBytes
+	, fromBytes
 	, fromObject
 	, length
 	, append
@@ -42,8 +42,14 @@ instance Concrete Bytes where
 {# fun pure hscpython_PyBytes_Type as bytesType
 	{} -> `Type' peekStaticObject* #}
 
-toByteString :: Bytes -> IO B.ByteString
-toByteString py =
+toBytes :: B.ByteString -> IO Bytes
+toBytes bytes = let
+	mkBytes = {# call PyBytes_FromStringAndSize as ^ #}
+	in B.unsafeUseAsCStringLen bytes $ \(cstr, len) ->
+	   stealObject =<< mkBytes cstr (fromIntegral len)
+
+fromBytes :: Bytes -> IO B.ByteString
+fromBytes py =
 	alloca $ \bytesPtr ->
 	alloca $ \lenPtr ->
 	withObject py $ \pyPtr -> do
@@ -52,12 +58,6 @@ toByteString py =
 	bytes <- peek bytesPtr
 	len <- peek lenPtr
 	B.packCStringLen (bytes, fromIntegral len)
-
-fromByteString :: B.ByteString -> IO Bytes
-fromByteString bytes = let
-	mkBytes = {# call PyBytes_FromStringAndSize as ^ #}
-	in B.unsafeUseAsCStringLen bytes $ \(cstr, len) ->
-	   stealObject =<< mkBytes cstr (fromIntegral len)
 
 {# fun PyBytes_FromObject as fromObject
 	`Object self ' =>

@@ -27,11 +27,11 @@ module CPython.Types.Module
 	, importModule
 	, reload
 	) where
-import Prelude hiding (fromInteger)
+import Prelude hiding (toInteger)
 import Data.Text (Text)
 import CPython.Internal hiding (new)
-import CPython.Types.Integer (fromInteger)
-import CPython.Types.Unicode (fromText)
+import CPython.Types.Integer (toInteger)
+import CPython.Types.Unicode (toUnicode)
 
 #include <hscpython-shim.h>
 
@@ -71,14 +71,14 @@ instance Concrete Module where
 	} -> `()' checkStatusCode* #}
 
 addIntegerConstant :: Module -> Text -> Integer -> IO ()
-addIntegerConstant m name value = fromInteger value >>= addObject m name
+addIntegerConstant m name value = toInteger value >>= addObject m name
 
 addTextConstant :: Module -> Text -> Text -> IO ()
-addTextConstant m name value = fromText value >>= addObject m name
+addTextConstant m name value = toUnicode value >>= addObject m name
 
 importModule :: Text -> IO Module
 importModule name = do
-	pyName <- fromText name
+	pyName <- toUnicode name
 	withObject pyName $ \namePtr ->
 		{# call PyImport_Import as ^ #} namePtr
 		>>= stealObject

@@ -41,8 +41,17 @@ instance Concrete Integer where
 {# fun pure hscpython_PyLong_Type as integerType
 	{} -> `Type' peekStaticObject* #}
 
-toInteger :: Integer -> IO Prelude.Integer
-toInteger py = do
+toInteger :: Prelude.Integer -> IO Integer
+toInteger int = do
+	let longlong = fromIntegral int
+	let [_, min', max'] = [longlong, minBound, maxBound]
+	stealObject =<< if Prelude.toInteger min' < int && int < Prelude.toInteger max'
+		then {# call PyLong_FromLongLong as ^ #} longlong
+		else withCString (show int) $ \cstr ->
+			{# call PyLong_FromString as ^ #} cstr nullPtr 10
+
+fromInteger :: Integer -> IO Prelude.Integer
+fromInteger py = do
 	(long, overflow) <- (withObject py $ \pyPtr ->
 		alloca $ \overflowPtr -> do
 		poke overflowPtr 0
@@ -51,13 +60,4 @@ toInteger py = do
 		return (long, overflow))
 	if overflow == 0
 		then return $ Prelude.toInteger long
-		else fmap (read . T.unpack) $ U.toText =<< O.string py
-
-fromInteger :: Prelude.Integer -> IO Integer
-fromInteger int = do
-	let longlong = fromIntegral int
-	let [_, min', max'] = [longlong, minBound, maxBound]
-	stealObject =<< if Prelude.toInteger min' < int && int < Prelude.toInteger max'
-		then {# call PyLong_FromLongLong as ^ #} longlong
-		else withCString (show int) $ \cstr ->
-			{# call PyLong_FromString as ^ #} cstr nullPtr 10
+		else fmap (read . T.unpack) $ U.fromUnicode =<< O.string py

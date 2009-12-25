@@ -17,8 +17,8 @@
 module CPython.Types.Float
 	( Float
 	, floatType
-	, toDouble
-	, fromDouble
+	, toFloat
+	, fromFloat
 	) where
 import Prelude hiding (Float)
 import CPython.Internal
@@ -37,10 +37,10 @@ instance Concrete Float where
 {# fun pure hscpython_PyFloat_Type as floatType
 	{} -> `Type' peekStaticObject* #}
 
-{# fun PyFloat_AsDouble as toDouble
-	{ withObject* `Float'
-	} -> `Double' realToFrac #}
-
-{# fun PyFloat_FromDouble as fromDouble
+{# fun PyFloat_FromDouble as toFloat
 	{ realToFrac `Double'
 	} -> `Float' stealObject* #}
+
+{# fun PyFloat_AsDouble as fromFloat
+	{ withObject* `Float'
+	} -> `Double' realToFrac #}

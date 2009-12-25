@@ -15,12 +15,16 @@
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
 module CPython.Types.Set
-	( Set
+	( AnySet
+	, Set
 	, FrozenSet
 	, setType
 	, frozenSetType
-	, newSet
-	, newFrozenSet
+	, toSet
+	, toFrozenSet
+	, iterableToSet
+	, iterableToFrozenSet
+	, fromSet
 	, size
 	, contains
 	, add
@@ -61,17 +65,24 @@ instance AnySet FrozenSet
 {# fun pure hscpython_PyFrozenSet_Type as frozenSetType
 	{} -> `Type' peekStaticObject* #}
 
-newSet :: Object obj => Maybe obj -> IO Set
-newSet obj =
-	maybeWith withObject obj $ \objPtr ->
-	{# call PySet_New as ^ #} objPtr
-	>>= stealObject
+toSet :: [SomeObject] -> IO Set
+toSet = undefined
 
-newFrozenSet :: Object obj => Maybe obj -> IO FrozenSet
-newFrozenSet obj =
-	maybeWith withObject obj $ \objPtr ->
-	{# call PyFrozenSet_New as ^ #} objPtr
-	>>= stealObject
+toFrozenSet :: [SomeObject] -> IO FrozenSet
+toFrozenSet = undefined
+
+{# fun PySet_New as iterableToSet
+	`Object obj' =>
+	{ withObject* `obj'
+	} -> `Set' stealObject* #}
+
+{# fun PyFrozenSet_New as iterableToFrozenSet
+	`Object obj' =>
+	{ withObject* `obj'
+	} -> `FrozenSet' stealObject* #}
+
+fromSet :: AnySet set => set -> IO [SomeObject]
+fromSet set = undefined
 
 size :: AnySet set => set -> IO Integer
 size set =
