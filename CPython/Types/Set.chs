@@ -33,6 +33,7 @@ module CPython.Types.Set
 	, clear
 	) where
 import CPython.Internal
+import CPython.Types.Tuple (toTuple, iterableToTuple, fromTuple)
 
 #include <hscpython-shim.h>
 
@@ -66,10 +67,10 @@ instance AnySet FrozenSet
 	{} -> `Type' peekStaticObject* #}
 
 toSet :: [SomeObject] -> IO Set
-toSet = undefined
+toSet xs = toTuple xs >>= iterableToSet
 
 toFrozenSet :: [SomeObject] -> IO FrozenSet
-toFrozenSet = undefined
+toFrozenSet xs = toTuple xs >>= iterableToFrozenSet
 
 {# fun PySet_New as iterableToSet
 	`Object obj' =>
@@ -82,7 +83,7 @@ toFrozenSet = undefined
 	} -> `FrozenSet' stealObject* #}
 
 fromSet :: AnySet set => set -> IO [SomeObject]
-fromSet set = undefined
+fromSet set = iterableToTuple set >>= fromTuple
 
 {# fun PySet_Size as size
 	`AnySet set' =>
