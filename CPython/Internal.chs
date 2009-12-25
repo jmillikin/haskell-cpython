@@ -27,6 +27,7 @@ module CPython.Internal
 	, peekTextW
 	, withText
 	, withTextW
+	, mapWith
 	
 	-- * Fundamental types
 	, SomeObject (..)
@@ -83,6 +84,11 @@ withText = withCString . T.unpack
 
 withTextW :: T.Text -> (CWString -> IO a) -> IO a
 withTextW = withCWString . T.unpack
+
+mapWith :: (a -> (b -> IO c) -> IO c) -> [a] -> ([b] -> IO c) -> IO c
+mapWith with = step [] where
+	step acc [] io = io acc
+	step acc (x:xs) io = with x $ \y -> step (acc ++ [y]) xs io
 
 data SomeObject = forall a. (Object a) => SomeObject (ForeignPtr a)
 

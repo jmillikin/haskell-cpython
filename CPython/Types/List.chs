@@ -17,8 +17,8 @@
 module CPython.Types.List
 	( List
 	, listType
-	, new
-	, pack
+	, toList
+	, fromList
 	, length
 	, getItem
 	, setItem
@@ -42,19 +42,21 @@ instance Concrete List where
 {# fun pure hscpython_PyList_Type as listType
 	{} -> `Type' peekStaticObject* #}
 
-{# fun PyList_New as new
-	{ fromIntegral `Integer'
-	} -> `List' stealObject* #}
+toList :: [SomeObject] -> IO List
+toList xs =
+	mapWith withObject xs $ \ptrs ->
+	withArrayLen ptrs $ \count array ->
+	{# call hscpython_poke_list #} (fromIntegral count) array
+	>>= stealObject
 
-pack :: [SomeObject] -> IO List
-pack xs = do
-	list <- new . toInteger $ Prelude.length xs
-	setItems list 0 xs
-	return list
-
-setItems :: List -> Integer -> [SomeObject] -> IO ()
-setItems _ _ [] = return ()
-setItems l idx (x:xs) = setItem l idx x >> setItems l (idx + 1) xs
+fromList :: List -> IO [SomeObject]
+fromList py =
+	withObject py $ \pyPtr ->
+	({# call PyList_Size as ^ #} pyPtr >>=) $ \size ->
+	let size' = fromIntegral size :: Int in
+	withArray (replicate size' nullPtr) $ \ptrs ->
+	{# call hscpython_peek_list #} pyPtr size ptrs >>
+	peekArray size' ptrs >>= mapM peekObject
 
 {# fun PyList_Size as length
 	{ withObject* `List'
