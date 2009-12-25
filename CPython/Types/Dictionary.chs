@@ -107,7 +107,7 @@ instance Concrete Dictionary where
 
 {# fun PyDict_Size as size
 	{ withObject* `Dictionary'
-	} -> `Integer' fromIntegral #}
+	} -> `Integer' checkIntReturn* #}
 
 -- next
 

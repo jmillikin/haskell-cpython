@@ -68,7 +68,7 @@ fromByteArray py =
 
 {# fun PyByteArray_Size as length
 	{ withObject* `ByteArray'
-	} -> `Integer' toInteger #}
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PyByteArray_Resize as resize
 	{ withObject* `ByteArray'

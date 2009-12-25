@@ -75,11 +75,10 @@ castToMapping obj =
 	, withObject* `key'
 	} -> `()' checkStatusCode* #}
 
-size :: Mapping self => self -> IO Integer
-size self = withObject self $ \ptr -> do
-	cRes <- {# call PyMapping_Size as ^ #} ptr
-	exceptionIf $ cRes == -1
-	return $ toInteger cRes
+{# fun PyMapping_Size as size
+	`Mapping self' =>
+	{ withObject* `self'
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PyMapping_HasKey as hasKey
 	`(Mapping self, Object key)' =>

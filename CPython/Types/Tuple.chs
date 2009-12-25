@@ -54,7 +54,7 @@ fromTuple py =
 
 {# fun PyTuple_Size as length
 	{ withObject* `Tuple'
-	} -> `Integer' toInteger #}
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PyTuple_GetItem as getItem
 	{ withObject* `Tuple'
@@ -72,5 +72,5 @@ setItem self index x =
 	withObject self $ \selfPtr ->
 	withObject x $ \xPtr -> do
 	incref xPtr
-	cRes <- {# call PyTuple_SetItem as ^ #} selfPtr (fromIntegral index) xPtr
-	exceptionIf $ cRes /= 0
+	{# call PyTuple_SetItem as ^ #} selfPtr (fromIntegral index) xPtr
+	>>= checkStatusCode
