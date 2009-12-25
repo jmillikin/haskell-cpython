@@ -146,7 +146,12 @@ decode bytes enc errors =
 	} -> `Unicode' stealObject* #}
 
 split :: Unicode -> Maybe Unicode -> Maybe Integer -> IO List
-split = undefined
+split s sep maxsplit =
+	withObject s $ \sPtr ->
+	maybeWith withObject sep $ \sepPtr ->
+	let max' = maybe (- 1) fromInteger maxsplit in
+	{# call hscpython_PyUnicode_Split #} sPtr sepPtr max'
+	>>= stealObject
 
 {# fun hscpython_PyUnicode_Splitlines as splitLines
 	{ withObject* `Unicode'
