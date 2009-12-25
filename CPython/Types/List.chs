@@ -60,7 +60,7 @@ fromList py =
 
 {# fun PyList_Size as length
 	{ withObject* `List'
-	} -> `Integer' toInteger #}
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PyList_GetItem as getItem
 	{ withObject* `List'
@@ -72,8 +72,8 @@ setItem self index x =
 	withObject self $ \selfPtr ->
 	withObject x $ \xPtr -> do
 	incref xPtr
-	cRes <- {# call PyList_SetItem as ^ #} selfPtr (fromIntegral index) xPtr
-	checkStatusCode cRes
+	{# call PyList_SetItem as ^ #} selfPtr (fromIntegral index) xPtr
+	>>= checkStatusCode
 
 {# fun PyList_Insert as insert
 	`Object item' =>
@@ -100,8 +100,8 @@ setSlice self low high items = let
 	high' = fromIntegral high in
 	withObject self $ \selfPtr ->
 	maybeWith withObject items $ \itemsPtr -> do
-	cRes <- {# call PyList_SetSlice as ^ #} selfPtr low' high' itemsPtr
-	checkStatusCode cRes
+	{# call PyList_SetSlice as ^ #} selfPtr low' high' itemsPtr
+	>>= checkStatusCode
 
 {# fun PyList_Sort as sort
 	{ withObject* `List'

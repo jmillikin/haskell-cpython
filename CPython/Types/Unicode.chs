@@ -106,7 +106,7 @@ fromUnicode obj = withObject obj $ \ptr -> do
 
 {# fun hscpython_PyUnicode_GetSize as length
 	{ withObject* `Unicode'
-	} -> `Integer' toInteger #}
+	} -> `Integer' checkIntReturn* #}
 
 {# fun hscpython_PyUnicode_FromEncodedObject as fromEncodedObject
 	`Object obj' =>
@@ -133,8 +133,8 @@ decode bytes enc errors =
 	withErrors errors $ \errorsPtr ->
 	alloca $ \bufferPtr ->
 	alloca $ \lenPtr -> do
-	cRes <- {# call PyBytes_AsStringAndSize as ^ #} bytesPtr bufferPtr lenPtr
-	exceptionIf $ cRes == -1
+	{# call PyBytes_AsStringAndSize as ^ #} bytesPtr bufferPtr lenPtr
+		>>= checkStatusCode
 	buffer <- peek bufferPtr
 	len <- peek lenPtr
 	{# call hscpython_PyUnicode_Decode #} buffer len encPtr errorsPtr
@@ -200,15 +200,12 @@ find str substr start end dir =
 		x | x >= 0 -> return . Just . toInteger $ x
 		x -> throwIO . ErrorCall $ "Invalid return code: " ++ show x
 
-count :: Unicode -> Unicode -> Integer -> Integer -> IO Integer
-count str substr start end =
-	withObject str $ \strPtr ->
-	withObject substr $ \substrPtr -> do
-	let start' = fromInteger start
-	let end' = fromInteger end
-	cRes <- {# call hscpython_PyUnicode_Count #} strPtr substrPtr start' end'
-	exceptionIf $ cRes == -1
-	return $ toInteger cRes
+{# fun hscpython_PyUnicode_Count as count
+	{ withObject* `Unicode'
+	, withObject* `Unicode'
+	, fromInteger `Integer'
+	, fromInteger `Integer'
+	} -> `Integer' checkIntReturn* #}
 
 replace :: Unicode -> Unicode -> Unicode -> Maybe Integer -> IO Unicode
 replace str substr replstr maxcount =

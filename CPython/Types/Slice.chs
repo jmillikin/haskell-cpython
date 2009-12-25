@@ -53,8 +53,9 @@ getIndices slice length =
 	alloca $ \stopPtr ->
 	alloca $ \stepPtr ->
 	alloca $ \sliceLenPtr -> do
-	cRes <- {# call PySlice_GetIndicesEx as ^ #} slicePtr length' startPtr stopPtr stepPtr sliceLenPtr
-	checkStatusCode cRes
+	{# call PySlice_GetIndicesEx as ^ #}
+		slicePtr length' startPtr stopPtr stepPtr sliceLenPtr
+		>>= checkStatusCode
 	start <- fmap toInteger $ peek startPtr
 	stop <- fmap toInteger $ peek stopPtr
 	step <- fmap toInteger $ peek stepPtr

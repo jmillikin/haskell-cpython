@@ -51,6 +51,7 @@ module CPython.Internal
 	, exceptionIf
 	, checkStatusCode
 	, checkBoolReturn
+	, checkIntReturn
 	
 	-- * Other classes
 	, Mapping (..)
@@ -184,6 +185,11 @@ checkBoolReturn :: CInt -> IO Bool
 checkBoolReturn x = do
 	exceptionIf $ x == -1
 	return $ x /= 0
+
+checkIntReturn :: Integral a => a -> IO Integer
+checkIntReturn x = do
+	exceptionIf $ x == -1
+	return $ toInteger x
 
 data SomeMapping = forall a. (Mapping a) => SomeMapping (ForeignPtr a)
 

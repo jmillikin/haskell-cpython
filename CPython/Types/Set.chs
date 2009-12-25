@@ -84,12 +84,10 @@ toFrozenSet = undefined
 fromSet :: AnySet set => set -> IO [SomeObject]
 fromSet set = undefined
 
-size :: AnySet set => set -> IO Integer
-size set =
-	withObject set $ \setPtr -> do
-	cRes <- {# call PySet_Size as ^ #} setPtr
-	exceptionIf $ cRes == -1
-	return $ toInteger cRes
+{# fun PySet_Size as size
+	`AnySet set' =>
+	{ withObject* `set'
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PySet_Contains as contains
 	`(AnySet set, Object key)' =>

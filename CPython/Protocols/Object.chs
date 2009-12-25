@@ -193,11 +193,10 @@ comparisonToInt = fromIntegral . fromEnum . enum where
 	{ withObject* `self'
 	} -> `Bool' checkBoolReturn* #}
 
-hash :: Object self => self -> IO Integer
-hash self = withObject self $ \ptr -> do
-	cRes <- {# call PyObject_Hash as ^ #} ptr
-	exceptionIf $ cRes == -1
-	return $ toInteger cRes
+{# fun PyObject_Hash as hash
+	`Object self' =>
+	{ withObject* `self'
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PyObject_Dir as dir
 	`Object self' =>

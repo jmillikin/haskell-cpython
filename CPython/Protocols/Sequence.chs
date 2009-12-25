@@ -81,11 +81,10 @@ castToSequence obj =
 		then Just $ unsafeCastToSequence obj
 		else Nothing
 
-length :: Sequence self => self -> IO Integer
-length self = withObject self $ \ptr -> do
-	cRes <- {# call PyMapping_Size as ^ #} ptr
-	exceptionIf $ cRes == -1
-	return $ toInteger cRes
+{# fun PySequence_Size as length
+	`Sequence self' =>
+	{ withObject* `self'
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PySequence_Concat as append
 	`(Sequence a, Sequence b)' =>
@@ -156,7 +155,7 @@ length self = withObject self $ \ptr -> do
 	`(Sequence self, Object v)' =>
 	{ withObject* `self'
 	, withObject* `v'
-	} -> `Integer' toInteger #}
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PySequence_Contains as contains
 	`(Sequence self, Object v)' =>
@@ -164,13 +163,11 @@ length self = withObject self $ \ptr -> do
 	, withObject* `v'
 	} -> `Bool' checkBoolReturn* #}
 
-index :: (Sequence self, Object v) => self -> v -> IO Integer
-index self v =
-	withObject self $ \selfPtr ->
-	withObject v $ \vPtr -> do
-	cRes <- {# call PySequence_Index as ^ #} selfPtr vPtr
-	exceptionIf $ cRes == -1
-	return $ toInteger cRes
+{# fun PySequence_Index as index
+	`(Sequence self, Object v)' =>
+	{ withObject* `self'
+	, withObject* `v'
+	} -> `Integer' checkIntReturn* #}
 
 {# fun PySequence_List as toList
 	`Sequence self' =>

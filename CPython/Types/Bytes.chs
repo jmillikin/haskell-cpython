@@ -53,8 +53,8 @@ fromBytes py =
 	alloca $ \bytesPtr ->
 	alloca $ \lenPtr ->
 	withObject py $ \pyPtr -> do
-	cRes <- {# call PyBytes_AsStringAndSize as ^ #} pyPtr bytesPtr lenPtr
-	checkStatusCode cRes
+	{# call PyBytes_AsStringAndSize as ^ #} pyPtr bytesPtr lenPtr
+		>>= checkStatusCode
 	bytes <- peek bytesPtr
 	len <- peek lenPtr
 	B.packCStringLen (bytes, fromIntegral len)
@@ -66,7 +66,7 @@ fromBytes py =
 
 {# fun PyBytes_Size as length
 	{ withObject* `Bytes'
-	} -> `Integer' toInteger #}
+	} -> `Integer' checkIntReturn* #}
 
 append :: Bytes -> Bytes -> IO Bytes
 append self next =
