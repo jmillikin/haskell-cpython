@@ -37,14 +37,14 @@ instance Concrete Complex where
 {# fun pure hscpython_PyComplex_Type as complexType
 	{} -> `Type' peekStaticObject* #}
 
-toComplex :: Complex -> IO (C.Complex Double)
-toComplex py = withObject py $ \pyPtr -> do
-	real <- {# call PyComplex_RealAsDouble as ^ #} pyPtr
-	imag <- {# call PyComplex_ImagAsDouble as ^ #} pyPtr
-	return $ realToFrac real C.:+ realToFrac imag
-
-fromComplex :: C.Complex Double -> IO Complex
-fromComplex x = raw >>= stealObject where
+toComplex :: C.Complex Double -> IO Complex
+toComplex x = raw >>= stealObject where
 	real = realToFrac $ C.realPart x
 	imag = realToFrac $ C.imagPart x
 	raw = {# call PyComplex_FromDoubles as ^ #} real imag
+
+fromComplex :: Complex -> IO (C.Complex Double)
+fromComplex py = withObject py $ \pyPtr -> do
+	real <- {# call PyComplex_RealAsDouble as ^ #} pyPtr
+	imag <- {# call PyComplex_ImagAsDouble as ^ #} pyPtr
+	return $ realToFrac real C.:+ realToFrac imag

@@ -17,8 +17,8 @@
 module CPython.Types.ByteArray
 	( ByteArray
 	, byteArrayType
-	, toByteString
-	, fromByteString
+	, toByteArray
+	, fromByteArray
 	, fromObject
 	, append
 	, length
@@ -43,18 +43,18 @@ instance Concrete ByteArray where
 {# fun pure hscpython_PyByteArray_Type as byteArrayType
 	{} -> `Type' peekStaticObject* #}
 
-toByteString :: ByteArray -> IO B.ByteString
-toByteString py =
+toByteArray :: B.ByteString -> IO ByteArray
+toByteArray bytes = let
+	mkByteArray = {# call PyByteArray_FromStringAndSize as ^ #}
+	in B.unsafeUseAsCStringLen bytes $ \(cstr, len) ->
+	   stealObject =<< mkByteArray cstr (fromIntegral len)
+
+fromByteArray :: ByteArray -> IO B.ByteString
+fromByteArray py =
 	withObject py $ \pyPtr -> do
 	size' <- {# call PyByteArray_Size as ^ #} pyPtr
 	bytes <- {# call PyByteArray_AsString as ^ #} pyPtr
 	B.packCStringLen (bytes, fromIntegral size')
-
-fromByteString :: B.ByteString -> IO ByteArray
-fromByteString bytes = let
-	mkByteArray = {# call PyByteArray_FromStringAndSize as ^ #}
-	in B.unsafeUseAsCStringLen bytes $ \(cstr, len) ->
-	   stealObject =<< mkByteArray cstr (fromIntegral len)
 
 {# fun PyByteArray_FromObject as fromObject
 	`Object self ' =>
