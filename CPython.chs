@@ -21,6 +21,7 @@ module CPython
 	, newInterpreter
 	, endInterpreter
 	, getProgramName
+	, setProgramName
 	, getPrefix
 	, getExecPrefix
 	, getProgramFullPath
@@ -32,6 +33,7 @@ module CPython
 	, getBuildInfo
 	, setArgv
 	, getPythonHome
+	, setPythonHome
 	) where
 import Data.Text (Text)
 import CPython.Internal
@@ -60,13 +62,17 @@ endInterpreter :: ThreadState -> IO ()
 endInterpreter (ThreadState ptr) =
 	{# call Py_EndInterpreter as ^ #} $ castPtr ptr
 
--- setProgramName :: Text -> IO ()
-
 getProgramName :: IO Text
 getProgramName = pyGetProgramName >>= peekTextW
 
 foreign import ccall safe "hscpython-shim.h Py_GetProgramName"
 	pyGetProgramName :: IO CWString
+
+setProgramName :: Text -> IO ()
+setProgramName name = withTextW name cSetProgramName
+
+foreign import ccall safe "hscpython-shim.h hscpython_SetProgramName"
+	cSetProgramName :: CWString -> IO ()
 
 getPrefix :: IO Text
 getPrefix = pyGetPrefix >>= peekTextW
@@ -121,10 +127,14 @@ setArgv argv0 argv =
 foreign import ccall safe "hscpython-shim.h PySys_SetArgv"
 	pySetArgv :: CInt -> Ptr CWString -> IO ()
 
--- setPythonHome :: Text -> IO ()
-
 getPythonHome :: IO Text
 getPythonHome = pyGetPythonHome >>= peekTextW
 
 foreign import ccall safe "hscpython-shim.h Py_GetPythonHome"
 	pyGetPythonHome :: IO CWString
+
+setPythonHome :: Text -> IO ()
+setPythonHome name = withTextW name cSetPythonHome
+
+foreign import ccall safe "hscpython-shim.h hscpython_SetPythonHome"
+	cSetPythonHome :: CWString -> IO ()
