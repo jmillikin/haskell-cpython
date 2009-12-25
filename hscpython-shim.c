@@ -208,6 +208,7 @@ PyObject *hscpython_poke_list (size_t count, PyObject **objs)
 	
 	for (ii = 0; ii < count; ii++)
 	{
+		Py_INCREF (objs[ii]);
 		PyList_SET_ITEM (list, ii, objs[ii]);
 	}
 	return list;
@@ -233,6 +234,7 @@ PyObject *hscpython_poke_tuple (size_t count, PyObject **objs)
 	
 	for (ii = 0; ii < count; ii++)
 	{
+		Py_INCREF (objs[ii]);
 		PyTuple_SET_ITEM (tuple, ii, objs[ii]);
 	}
 	return tuple;
