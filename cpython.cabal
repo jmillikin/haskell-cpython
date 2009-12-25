@@ -20,7 +20,7 @@ library
     , text
 
   build-tools:
-    c2hs >= 0.16
+    c2hs >= 0.15
 
   exposed-modules:
     CPython
