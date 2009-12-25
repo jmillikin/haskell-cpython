@@ -30,6 +30,7 @@ module CPython
 	, getCopyright
 	, getCompiler
 	, getBuildInfo
+	, setArgv
 	, getPythonHome
 	) where
 import Data.Text (Text)
@@ -105,6 +106,20 @@ foreign import ccall safe "hscpython-shim.h Py_GetPath"
 
 {# fun Py_GetBuildInfo as getBuildInfo
 	{} -> `Text' peekText* #}
+
+withTextPtrs :: [Text] -> ([CWString] -> IO a) -> IO a
+withTextPtrs = step [] where
+	step acc [] io = io acc
+	step acc (t:ts) io = withTextW t $ \tPtr -> step (acc ++ [tPtr]) ts io
+
+setArgv :: Text -> [Text] -> IO ()
+setArgv argv0 argv =
+	withTextPtrs (argv0 : argv) $ \textPtrs ->
+	let argc = fromIntegral $ length textPtrs in
+	withArray textPtrs $ pySetArgv argc
+
+foreign import ccall safe "hscpython-shim.h PySys_SetArgv"
+	pySetArgv :: CInt -> Ptr CWString -> IO ()
 
 -- setPythonHome :: Text -> IO ()
 
