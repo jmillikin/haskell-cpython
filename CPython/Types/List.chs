@@ -18,6 +18,7 @@ module CPython.Types.List
 	( List
 	, listType
 	, toList
+	, iterableToList
 	, fromList
 	, length
 	, getItem
@@ -33,6 +34,7 @@ module CPython.Types.List
 import Prelude hiding (reverse, length)
 import qualified Prelude as Prelude
 import CPython.Internal hiding (new)
+import qualified CPython.Types.Tuple as T
 
 #include <hscpython-shim.h>
 
@@ -48,6 +50,11 @@ toList xs =
 	withArrayLen ptrs $ \count array ->
 	{# call hscpython_poke_list #} (fromIntegral count) array
 	>>= stealObject
+
+iterableToList :: Object iter => iter -> IO List
+iterableToList iter = do
+	raw <- callObjectRaw listType =<< T.toTuple [toObject iter]
+	return $ unsafeCast raw
 
 fromList :: List -> IO [SomeObject]
 fromList py =

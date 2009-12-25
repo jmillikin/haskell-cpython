@@ -45,6 +45,8 @@ module CPython.Internal
 	, stealObject
 	, incref
 	, decref
+	, callObjectRaw
+	, unsafeCast
 	
 	-- * Exceptions
 	, Exception (..)
@@ -152,6 +154,16 @@ stealObject ptr = exceptionIf (ptr == nullPtr) >> unsafeStealObject ptr
 
 foreign import ccall "hscpython-shim.h &hscpython_Py_DECREF"
 	staticDecref :: FunPtr (Ptr a -> IO ())
+
+{# fun PyObject_CallObject as callObjectRaw
+	`(Object self, Object args)' =>
+	{ withObject* `self'
+	, withObject* `args'
+	} -> `SomeObject' stealObject* #}
+
+unsafeCast :: (Object a, Object b) => a -> b
+unsafeCast a = case toObject a of
+	SomeObject ptr -> fromForeignPtr (castForeignPtr ptr)
 
 data Exception = Exception
 	{ exceptionType      :: SomeObject

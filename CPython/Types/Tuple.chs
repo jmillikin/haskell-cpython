@@ -18,6 +18,7 @@ module CPython.Types.Tuple
 	( Tuple
 	, tupleType
 	, toTuple
+	, iterableToTuple
 	, fromTuple
 	, length
 	, getItem
@@ -42,6 +43,11 @@ toTuple xs =
 	withArrayLen ptrs $ \count array ->
 	{# call hscpython_poke_tuple #} (fromIntegral count) array
 	>>= stealObject
+
+iterableToTuple :: Object iter => iter -> IO Tuple
+iterableToTuple iter = do
+	raw <- callObjectRaw tupleType =<< toTuple [toObject iter]
+	return $ unsafeCast raw
 
 fromTuple :: Tuple -> IO [SomeObject]
 fromTuple py =
