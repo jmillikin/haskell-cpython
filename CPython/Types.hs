@@ -78,6 +78,7 @@ module CPython.Types
 	, toInteger
 	, fromInteger
 	, toList
+	, iterableToList
 	, fromList
 	, toSet
 	, toFrozenSet
@@ -85,6 +86,7 @@ module CPython.Types
 	, iterableToFrozenSet
 	, fromSet
 	, CPython.Types.Tuple.toTuple
+	, iterableToTuple
 	, fromTuple
 	, toUnicode
 	, fromUnicode
