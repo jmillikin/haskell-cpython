@@ -18,6 +18,9 @@ module CPython.Protocols.Mapping
 	( Mapping (..)
 	, SomeMapping
 	, castToMapping
+	, getItem
+	, setItem
+	, deleteItem
 	, size
 	, hasKey
 	, keys
@@ -52,6 +55,25 @@ castToMapping obj =
 	return $ if isMapping
 		then Just $ unsafeCastToMapping obj
 		else Nothing
+
+{# fun PyObject_GetItem as getItem
+	`(Mapping self, Object key)' =>
+	{ withObject* `self'
+	, withObject* `key'
+	} -> `SomeObject' stealObject* #}
+
+{# fun PyObject_SetItem as setItem
+	`(Mapping self, Object key, Object value)' =>
+	{ withObject* `self'
+	, withObject* `key'
+	, withObject* `value'
+	} -> `()' checkStatusCode* #}
+
+{# fun PyObject_DelItem as deleteItem
+	`(Mapping self, Object key)' =>
+	{ withObject* `self'
+	, withObject* `key'
+	} -> `()' checkStatusCode* #}
 
 size :: Mapping self => self -> IO Integer
 size self = withObject self $ \ptr -> do

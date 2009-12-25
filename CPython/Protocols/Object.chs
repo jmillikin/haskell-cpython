@@ -18,41 +18,69 @@ module CPython.Protocols.Object
 	( Object
 	, Concrete
 	, SomeObject
+	
+	-- * Types and casting
+	, getType
+	, isInstance
+	, isSubclass
 	, toObject
 	, cast
+	
+	-- * Attributes
 	, hasAttribute
 	, getAttribute
 	, setAttribute
 	, deleteAttribute
-	, Comparison (..)
-	, richCompare
+	
+	-- * Display and debugging
+	, print
 	, repr
 	, ascii
 	, string
 	, bytes
-	, isInstance
-	, isSubclass
+	
+	-- * Callables
 	, callable
 	, call
-	, callObject
+	, callArgs
 	, callMethod
+	, callMethodArgs
+	
+	-- * Misc
+	, Comparison (..)
+	, richCompare
+	, toBool
 	, hash
-	, isTrue
-	, not
-	, getType
-	, typeCheck
-	, getItem
-	, setItem
-	, deleteItem
 	, dir
 	, getIterator
 	) where
-import Prelude hiding (Ordering (..), compare, not, length)
-import CPython.Internal
-import qualified CPython.Types.Unicode as U
+import Prelude hiding (Ordering (..), print)
+import qualified Data.Text as T
+import System.IO (Handle, hPutStrLn)
+import CPython.Internal hiding (toBool)
 import qualified CPython.Types.Bytes as B
+import qualified CPython.Types.Dictionary as D
+import qualified CPython.Types.Tuple as Tuple
+import qualified CPython.Types.Unicode as U
 
 #include <hscpython-shim.h>
+
+{# fun PyObject_Type as getType
+	`Object self' =>
+	{ withObject* `self'
+	} -> `Type' stealObject* #}
+
+{# fun PyObject_IsInstance as isInstance
+	`(Object self, Object cls)' =>
+	{ withObject* `self'
+	, withObject* `cls'
+	} -> `Bool' checkBoolReturn* #}
+
+{# fun PyObject_IsSubclass as isSubclass
+	`(Object derived, Object cls)' =>
+	{ withObject* `derived'
+	, withObject* `cls'
+	} -> `Bool' checkBoolReturn* #}
 
 cast :: (Object a, Concrete b) => a -> IO (Maybe b)
 cast obj = do
@@ -88,26 +116,8 @@ cast obj = do
 	, withObject* `U.Unicode'
 	} -> `()' checkStatusCode* #}
 
-data Comparison = LT | LE | EQ | NE | GT | GE
-	deriving (Show)
-
-{# enum HSCPythonComparisonEnum {} #}
-
-comparisonToInt :: Comparison -> CInt
-comparisonToInt = fromIntegral . fromEnum . enum where
-	enum LT = HSCPYTHON_LT
-	enum LE = HSCPYTHON_LE
-	enum EQ = HSCPYTHON_EQ
-	enum NE = HSCPYTHON_NE
-	enum GT = HSCPYTHON_GT
-	enum GE = HSCPYTHON_GE
-
-{# fun PyObject_RichCompareBool as richCompare
-	`(Object a, Object b)' =>
-	{ withObject* `a'
-	, withObject* `b'
-	, comparisonToInt `Comparison'
-	} -> `Bool' checkBoolReturn* #}
+print :: Object self => self -> Handle -> IO ()
+print obj h = repr obj >>= U.fromUnicode >>= (hPutStrLn h . T.unpack)
 
 {# fun PyObject_Repr as repr
 	`Object self' =>
@@ -129,88 +139,65 @@ comparisonToInt = fromIntegral . fromEnum . enum where
 	{ withObject* `self'
 	} -> `B.Bytes' stealObject* #}
 
-{# fun PyObject_IsInstance as isInstance
-	`(Object self, Object cls)' =>
-	{ withObject* `self'
-	, withObject* `cls'
-	} -> `Bool' checkBoolReturn* #}
-
-{# fun PyObject_IsSubclass as isSubclass
-	`(Object derived, Object cls)' =>
-	{ withObject* `derived'
-	, withObject* `cls'
-	} -> `Bool' checkBoolReturn* #}
-
 {# fun PyCallable_Check as callable
 	`Object self' =>
 	{ withObject* `self'
 	} -> `Bool' checkBoolReturn* #}
 
-call :: Object self => self -> Tuple -> Maybe Dictionary -> IO SomeObject
+call :: Object self => self -> Tuple -> Dictionary -> IO SomeObject
 call self args kwargs =
 	withObject self $ \selfPtr ->
 	withObject args $ \argsPtr ->
-	maybeWith withObject kwargs $ \kwargsPtr ->
+	withObject kwargs $ \kwargsPtr ->
 	{# call PyObject_Call as ^ #} selfPtr argsPtr kwargsPtr
 	>>= stealObject
 
-callObject :: Object self => self -> Maybe Tuple -> IO SomeObject
-callObject self args =
-	withObject self $ \selfPtr ->
-	maybeWith withObject args $ \argsPtr ->
-	{# call PyObject_CallObject as ^ #} selfPtr argsPtr
-	>>= stealObject
+callArgs :: Object self => self -> [SomeObject] -> IO SomeObject
+callArgs self args = do
+	args' <- Tuple.toTuple args
+	D.new >>= call self args'
 
-callMethod :: Object self => self -> U.Unicode -> Tuple -> Maybe Dictionary -> IO SomeObject
+callMethod :: Object self => self -> T.Text -> Tuple -> Dictionary -> IO SomeObject
 callMethod self name args kwargs = do
-	method <- getAttribute self name
+	method <- getAttribute self =<< U.toUnicode name
 	call method args kwargs
+
+callMethodArgs :: Object self => self -> T.Text -> [SomeObject] -> IO SomeObject
+callMethodArgs self name args = do
+	args' <- Tuple.toTuple args
+	D.new >>= callMethod self name args'
+
+data Comparison = LT | LE | EQ | NE | GT | GE
+	deriving (Show)
+
+{# enum HSCPythonComparisonEnum {} #}
+
+comparisonToInt :: Comparison -> CInt
+comparisonToInt = fromIntegral . fromEnum . enum where
+	enum LT = HSCPYTHON_LT
+	enum LE = HSCPYTHON_LE
+	enum EQ = HSCPYTHON_EQ
+	enum NE = HSCPYTHON_NE
+	enum GT = HSCPYTHON_GT
+	enum GE = HSCPYTHON_GE
+
+{# fun PyObject_RichCompareBool as richCompare
+	`(Object a, Object b)' =>
+	{ withObject* `a'
+	, withObject* `b'
+	, comparisonToInt `Comparison'
+	} -> `Bool' checkBoolReturn* #}
+
+{# fun PyObject_IsTrue as toBool
+	`Object self' =>
+	{ withObject* `self'
+	} -> `Bool' checkBoolReturn* #}
 
 hash :: Object self => self -> IO Integer
 hash self = withObject self $ \ptr -> do
 	cRes <- {# call PyObject_Hash as ^ #} ptr
 	exceptionIf $ cRes == -1
 	return $ toInteger cRes
-
-{# fun PyObject_IsTrue as isTrue
-	`Object self' =>
-	{ withObject* `self'
-	} -> `Bool' checkBoolReturn* #}
-
-{# fun PyObject_Not as not
-	`Object self' =>
-	{ withObject* `self'
-	} -> `Bool' checkBoolReturn* #}
-
-{# fun PyObject_Type as getType
-	`Object self' =>
-	{ withObject* `self'
-	} -> `Type' stealObject* #}
-
-{# fun hscpython_PyObject_TypeCheck as typeCheck
-	`Object self' =>
-	{ withObject* `self'
-	, withObject* `Type'
-	} -> `Bool' #}
-
-{# fun PyObject_GetItem as getItem
-	`(Object self, Object key)' =>
-	{ withObject* `self'
-	, withObject* `key'
-	} -> `SomeObject' stealObject* #}
-
-{# fun PyObject_SetItem as setItem
-	`(Object self, Object key, Object value)' =>
-	{ withObject* `self'
-	, withObject* `key'
-	, withObject* `value'
-	} -> `()' checkStatusCode* #}
-
-{# fun PyObject_DelItem as deleteItem
-	`(Object self, Object key)' =>
-	{ withObject* `self'
-	, withObject* `key'
-	} -> `()' checkStatusCode* #}
 
 {# fun PyObject_Dir as dir
 	`Object self' =>
