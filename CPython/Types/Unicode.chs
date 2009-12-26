@@ -44,6 +44,8 @@ module CPython.Types.Unicode
 	, format
 	, contains
 	) where
+#include <hscpython-shim.h>
+
 import Prelude hiding (length)
 import Control.Exception (ErrorCall (..), throwIO)
 import qualified Data.Text as T
@@ -54,8 +56,6 @@ import qualified Data.Text.Foreign as TF
 #endif
 import CPython.Internal
 import CPython.Types.Bytes (Bytes)
-
-#include <hscpython-shim.h>
 
 newtype Unicode = Unicode (ForeignPtr Unicode)
 
