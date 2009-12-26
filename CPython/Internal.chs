@@ -167,13 +167,13 @@ unsafeCast a = case toObject a of
 
 data Exception = Exception
 	{ exceptionType      :: SomeObject
-	, exceptionValue     :: Maybe SomeObject
+	, exceptionValue     :: SomeObject
 	, exceptionTraceback :: Maybe SomeObject
 	}
 	deriving (Typeable)
 
 instance Show Exception where
-	show _ = "<CPython Exception>"
+	show _ = "<CPython exception>"
 
 instance E.Exception Exception
 
@@ -185,9 +185,9 @@ exceptionIf True =
 	alloca $ \pTrace -> do
 		{# call PyErr_Fetch as ^ #} pType pValue pTrace
 		{# call PyErr_NormalizeException as ^ #} pType pValue pTrace
-		eType <- unsafeStealObject pType
-		eValue <- maybePeek unsafeStealObject pValue
-		eTrace <- maybePeek unsafeStealObject pTrace
+		eType <- unsafeStealObject =<< peek pType
+		eValue <- unsafeStealObject =<< peek pValue
+		eTrace <- maybePeek unsafeStealObject =<< peek pTrace
 		E.throwIO $ Exception eType eValue eTrace
 
 checkStatusCode :: CInt -> IO ()
