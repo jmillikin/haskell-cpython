@@ -27,23 +27,43 @@ import CPython.Internal
 
 #include <hscpython-shim.h>
 
+-- | Return a 'Dictionary' of the builtins in the current execution frame,
+-- or the interpreter of the thread state if no frame is currently executing.
+-- 
 {# fun PyEval_GetBuiltins as getBuiltins
 	{} -> `Dictionary' peekObject* #}
 
+-- | Return a 'Dictionary' of the local variables in the current execution
+-- frame, or 'Nothing' if no frame is currently executing.
+-- 
 getLocals :: IO (Maybe Dictionary)
 getLocals = {# call PyEval_GetLocals as ^#} >>= maybePeek peekObject
 
+-- | Return a 'Dictionary' of the global variables in the current execution
+-- frame, or 'Nothing' if no frame is currently executing.
+-- 
 getGlobals :: IO (Maybe Dictionary)
 getGlobals = {# call PyEval_GetGlobals as ^#} >>= maybePeek peekObject
 
+-- | Return the current thread state's frame, which is 'Nothing' if no frame
+-- is currently executing.
+-- 
 getFrame :: IO (Maybe SomeObject)
 getFrame = {# call PyEval_GetFrame as ^#} >>= maybePeek peekObject
 
+-- | Return the name of /func/ if it is a function, class or instance object,
+-- else the name of /func/'s type.
+-- 
 {# fun PyEval_GetFuncName as getFunctionName
 	`Object func' =>
 	{ withObject* `func'
 	} -> `Text' peekText* #}
 
+-- | Return a description string, depending on the type of func. Return
+-- values include @\"()\"@ for functions and methods, @\"constructor\"@,
+-- @\"instance\"@, and @\"object\"@. Concatenated with the result of
+-- 'getFunctionName', the result will be a description of /func/.
+-- 
 {# fun PyEval_GetFuncDesc as getFunctionDescription
 	`Object func' =>
 	{ withObject* `func'

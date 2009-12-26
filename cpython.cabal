@@ -5,6 +5,8 @@ license: GPL-3
 license-file: license.txt
 author: John Millikin
 maintainer: jmillikin@gmail.com
+copyright: Copyright (c) John Millikin 2009,
+                     (c) Python Software Foundation 2001-2009.
 build-type: Simple
 cabal-version: >=1.2
 category: TODO

@@ -56,6 +56,9 @@ fromByteArray py =
 	bytes <- {# call PyByteArray_AsString as ^ #} pyPtr
 	B.packCStringLen (bytes, fromIntegral size')
 
+-- | Create a new byte array from any object which implements the buffer
+-- protocol.
+-- 
 {# fun PyByteArray_FromObject as fromObject
 	`Object self ' =>
 	{ withObject* `self'

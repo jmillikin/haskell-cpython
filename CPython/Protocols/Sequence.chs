@@ -73,6 +73,9 @@ unsafeCastToSequence x = case toObject x of
 		ptr' = castForeignPtr ptr :: ForeignPtr SomeSequence
 		in SomeSequence ptr'
 
+-- | Attempt to convert an object to a generic 'Sequence'. If the object does
+-- not implement the sequence protocol, returns 'Nothing'.
+-- 
 castToSequence :: Object a => a -> IO (Maybe SomeSequence)
 castToSequence obj =
 	withObject obj $ \objPtr -> do
@@ -163,24 +166,37 @@ castToSequence obj =
 	, withObject* `v'
 	} -> `Bool' checkBoolReturn* #}
 
+-- | Return the first index /i/ for which @self[i] == v@. This is equivalent
+-- to the Python expression @self.index(v)@.
+-- 
 {# fun PySequence_Index as index
 	`(Sequence self, Object v)' =>
 	{ withObject* `self'
 	, withObject* `v'
 	} -> `Integer' checkIntReturn* #}
 
+-- | Return a list object with the same contents as the arbitrary sequence
+-- /seq/. The returned list is guaranteed to be new.
+-- 
 {# fun PySequence_List as toList
-	`Sequence self' =>
-	{ withObject* `self'
+	`Sequence seq' =>
+	{ withObject* `seq'
 	} -> `List' stealObject* #}
 
+-- | Return a tuple object with the same contents as the arbitrary sequence
+-- /seq/. If /seq/ is already a tuple, it is re-used rather than copied.
+-- 
 {# fun PySequence_Tuple as toTuple
-	`Sequence self' =>
-	{ withObject* `self'
+	`Sequence seq' =>
+	{ withObject* `seq'
 	} -> `Tuple' stealObject* #}
 
+-- | Returns the sequence /seq/ as a tuple, unless it is already a tuple or
+-- list, in which case /seq/ is returned. If an error occurs, throws
+-- @TypeError@ with the given text as the exception text.
+-- 
 {# fun PySequence_Fast as fast
-	`Sequence self' =>
-	{ withObject* `self'
+	`Sequence seq' =>
+	{ withObject* `seq'
 	, withText* `Text'
 	} -> `SomeSequence' stealObject* #}

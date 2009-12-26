@@ -35,6 +35,14 @@ instance Object Proxy where
 	toObject (Proxy x) = SomeObject x
 	fromForeignPtr = Proxy
 
+-- | Return a weak reference for the object. This will always return a new
+-- reference, but is not guaranteed to create a new object; an existing
+-- reference object may be returned. The second parameter, /callback/, can
+-- be a callable object that receives notification when /obj/ is garbage
+-- collected; it should accept a single parameter, which will be the weak
+-- reference object itself. If ob is not a weakly-referencable object, or if
+-- /callback/ is not callable, this will throw a @TypeError@.
+-- 
 newReference :: (Object obj, Object callback) => obj -> Maybe callback -> IO Reference
 newReference obj cb =
 	withObject obj $ \objPtr ->
@@ -42,6 +50,14 @@ newReference obj cb =
 	{# call PyWeakref_NewRef as ^ #} objPtr cbPtr
 	>>= stealObject
 
+-- | Return a weak reference proxy for the object. This will always return a
+-- new reference, but is not guaranteed to create a new object; an existing
+-- proxy may be returned. The second parameter, /callback/, can be a callable
+-- object that receives notification when /obj/ is garbage collected; it
+-- should accept a single parameter, which will be the weak reference object
+-- itself. If ob is not a weakly-referencable object, or if /callback/ is not
+-- callable, this will throw a @TypeError@.
+-- 
 newProxy :: (Object obj, Object callback) => obj -> Maybe callback -> IO Proxy
 newProxy obj cb =
 	withObject obj $ \objPtr ->
@@ -49,6 +65,9 @@ newProxy obj cb =
 	{# call PyWeakref_NewProxy as ^ #} objPtr cbPtr
 	>>= stealObject
 
+-- | Return the referenced object from a weak reference. If the referent is
+-- no longer live, returns @None@.
+-- 
 {# fun PyWeakref_GetObject as getObject
 	{ withObject* `Reference'
 	} -> `SomeObject' peekObject* #}

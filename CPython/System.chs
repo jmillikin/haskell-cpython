@@ -27,6 +27,9 @@ import CPython.Internal
 
 #include <hscpython-shim.h>
 
+-- | Return the object /name/ from the @sys@ module, or 'Nothing' if it does
+-- not exist.
+-- 
 getObject :: Text -> IO (Maybe SomeObject)
 getObject name =
 	withText name $ \cstr -> do
@@ -35,6 +38,8 @@ getObject name =
 
 -- getFile
 
+-- | Set /name/ in the @sys@ module to a value.
+-- 
 setObject :: Object a => Text -> a -> IO ()
 setObject name v =
 	withText name $ \cstr ->
@@ -42,21 +47,31 @@ setObject name v =
 	{# call PySys_SetObject as ^ #} cstr vPtr
 	>>= checkStatusCode
 
+-- | Delete /name/ from the @sys@ module.
+-- 
 deleteObject :: Text -> IO ()
 deleteObject name =
 	withText name $ \cstr ->
 	{# call PySys_SetObject as ^ #} cstr nullPtr
 	>>= checkStatusCode
 
+-- | Reset @sys.warnoptions@ to an empty list.
+-- 
 {# fun PySys_ResetWarnOptions as resetWarnOptions
 	{} -> `()' id #}
 
+-- | Add an entry to @sys.warnoptions@.
+-- 
 addWarnOption :: Text -> IO ()
 addWarnOption str = withTextW str pySysAddWarnOption
 
 foreign import ccall safe "hscpython-shim.h PySys_AddWarnOption"
 	pySysAddWarnOption :: CWString -> IO ()
 
+-- | Set @sys.path@ to a list object of paths found in the parameter, which
+-- should be a list of paths separated with the platform's search path
+-- delimiter (@\':\'@ on Unix, @\';\'@ on Windows).
+-- 
 setPath :: Text -> IO ()
 setPath path = withTextW path pySysSetPath
 

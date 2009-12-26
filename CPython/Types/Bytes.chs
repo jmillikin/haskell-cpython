@@ -59,6 +59,9 @@ fromBytes py =
 	len <- peek lenPtr
 	B.packCStringLen (bytes, fromIntegral len)
 
+-- | Create a new byte string from any object which implements the buffer
+-- protocol.
+-- 
 {# fun PyBytes_FromObject as fromObject
 	`Object self ' =>
 	{ withObject* `self'

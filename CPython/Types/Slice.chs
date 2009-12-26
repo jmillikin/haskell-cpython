@@ -37,6 +37,11 @@ instance Concrete Slice where
 {# fun pure hscpython_PySlice_Type as sliceType
 	{} -> `Type' peekStaticObject* #}
 
+-- | Return a new slice object with the given values. The /start/, /stop/,
+-- and /step/ parameters are used as the values of the slice object
+-- attributes of the same names. Any of the values may be 'Nothing', in which
+-- case @None@ will be used for the corresponding attribute.
+-- 
 new :: (Object start, Object stop, Object step) => Maybe start -> Maybe stop -> Maybe step -> IO Slice
 new start stop step =
 	maybeWith withObject start $ \startPtr ->
@@ -45,7 +50,12 @@ new start stop step =
 	{# call PySlice_New as ^ #} startPtr stopPtr stepPtr
 	>>= stealObject
 
-getIndices :: Slice -> Integer -> IO (Integer, Integer, Integer, Integer)
+-- | Retrieve the start, stop, step, and slice length from a 'Slice',
+-- assuming a sequence of the given length.
+-- 
+getIndices :: Slice
+           -> Integer -- ^ Sequence length
+           -> IO (Integer, Integer, Integer, Integer)
 getIndices slice length =
 	withObject slice $ \slicePtr ->
 	let length' = fromIntegral length in

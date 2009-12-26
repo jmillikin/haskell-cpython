@@ -29,6 +29,9 @@ instance Concrete Type where
 {# fun pure hscpython_PyType_Type as typeType
 	{} -> `Type' peekStaticObject* #}
 
+-- | Returns 'True' if the first parameter is a subtype of the second
+-- parameter.
+-- 
 {# fun PyType_IsSubtype as isSubtype
 	{ withObject* `Type'
 	, withObject* `Type'

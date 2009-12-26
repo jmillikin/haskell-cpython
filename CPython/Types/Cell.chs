@@ -37,18 +37,25 @@ instance Concrete Cell where
 {# fun pure hscpython_PyCell_Type as cellType
 	{} -> `Type' peekStaticObject* #}
 
+-- | Create and return a new cell containing the value /obj/.
+-- 
 new :: Object obj => Maybe obj -> IO Cell
 new obj =
 	maybeWith withObject obj $ \objPtr ->
 	{# call PyCell_New as ^ #} objPtr
 	>>= stealObject
 
+-- | Return the contents of a cell.
+-- 
 get :: Cell -> IO (Maybe SomeObject)
 get cell =
 	withObject cell $ \cellPtr ->
 	{# call PyCell_Get as ^ #} cellPtr
 	>>= maybePeek stealObject
 
+-- | Set the contents of a cell to /obj/. This releases the reference to any
+-- current content of the cell.
+-- 
 set :: Object obj => Cell -> Maybe obj -> IO ()
 set cell obj =
 	withObject cell $ \cellPtr ->
