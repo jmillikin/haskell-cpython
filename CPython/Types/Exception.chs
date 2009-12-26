@@ -15,7 +15,10 @@
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
 module CPython.Types.Exception
-	( Exception (..)
+	( Exception
+	, exceptionType
+	, exceptionValue
+	, exceptionTraceback
 	) where
 import CPython.Internal
 
