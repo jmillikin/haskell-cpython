@@ -18,6 +18,7 @@ module CPython.Types
 	-- * Types and classes
 	  ByteArray
 	, Bytes
+	, Capsule
 	, Cell
 	, Code
 	, Complex
@@ -46,6 +47,7 @@ module CPython.Types
 	-- * Python 'Type' values
 	, byteArrayType
 	, bytesType
+	, capsuleType
 	, cellType
 	, codeType
 	, complexType
@@ -94,6 +96,7 @@ module CPython.Types
 import qualified Prelude as Prelude
 import CPython.Types.ByteArray
 import CPython.Types.Bytes
+import CPython.Types.Capsule
 import CPython.Types.Cell
 import CPython.Types.Code
 import CPython.Types.Complex
