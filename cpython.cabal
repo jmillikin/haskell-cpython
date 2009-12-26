@@ -1,5 +1,5 @@
 name: cpython
-version: 3.1.0
+version: 3.1.1
 synopsis: Bindings for libpython
 license: GPL-3
 license-file: license.txt
