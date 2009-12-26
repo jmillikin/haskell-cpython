@@ -47,9 +47,12 @@ module CPython.Types.Unicode
 	) where
 import Prelude hiding (length)
 import Control.Exception (ErrorCall (..), throwIO)
-import Data.Char (chr, ord)
 import qualified Data.Text as T
+#ifdef Py_UNICODE_WIDE
+import Data.Char (chr, ord)
+#else
 import qualified Data.Text.Foreign as TF
+#endif
 import CPython.Internal
 import CPython.Types.Bytes (Bytes)
 
