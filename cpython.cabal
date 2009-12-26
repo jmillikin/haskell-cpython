@@ -12,6 +12,7 @@ cabal-version: >=1.4
 category: Foreign
 homepage: http://ianen.org/haskell/bindings/cpython/
 tested-with: GHC==6.10.1, GHC==6.10.4
+extra-source-files: hscpython-shim.h
 
 library
   ghc-options: -Wall -fno-warn-orphans
