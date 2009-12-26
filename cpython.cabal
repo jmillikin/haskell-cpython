@@ -9,10 +9,9 @@ copyright: Copyright (c) John Millikin 2009,
                      (c) Python Software Foundation 2001-2009.
 build-type: Simple
 cabal-version: >=1.4
-category: TODO
-
-description:
-  TODO
+category: Foreign
+homepage: http://ianen.org/haskell/bindings/cpython/
+tested-with: GHC==6.10.1, GHC==6.10.4
 
 library
   ghc-options: -Wall -fno-warn-orphans
