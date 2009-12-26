@@ -50,6 +50,14 @@ instance Concrete Capsule where
 -- new :: Ptr () -> Maybe Text -> Destructor -> IO Capsule
 -- new = undefined
 
+-- | Retrieve the pointer stored in the capsule. On failure, throws an
+-- exception.
+-- 
+-- The name parameter must compare exactly to the name stored in the capsule.
+-- If the name stored in the capsule is 'Nothing', the name passed in must
+-- also be 'Nothing'. Python uses the C function strcmp() to compare capsule
+-- names.
+-- 
 getPointer :: Capsule -> Maybe Text -> IO (Ptr ())
 getPointer py name =
 	withObject py $ \pyPtr ->
@@ -59,6 +67,8 @@ getPointer py name =
 -- getDestructor :: Capsule -> IO (Maybe Destructor)
 -- getDestructor = undefined
 
+-- | Return the current context stored in the capsule, which might be @NULL@.
+-- 
 getContext :: Capsule -> IO (Ptr ())
 getContext py =
 	withObject py $ \pyPtr -> do
@@ -71,6 +81,8 @@ getContext py =
 			exceptionIf $ exc /= nullPtr
 			return ptr
 
+-- | Return the current name stored in the capsule, which might be 'Nothing'.
+-- 
 getName :: Capsule -> IO (Maybe Text)
 getName py =
 	withObject py $ \pyPtr -> do
@@ -83,9 +95,20 @@ getName py =
 			exceptionIf $ exc /= nullPtr
 			return Nothing
 
-importNamed :: Maybe Text -> Bool -> IO (Maybe (Ptr ()))
+-- | Import a pointer to a C object from a capsule attribute in a module.
+-- The name parameter should specify the full name to the attribute, as in
+-- @\"module.attribute\"@. The name stored in the capsule must match this
+-- string exactly. If the second parameter is 'False', import the module
+-- without blocking (using @PyImport_ImportModuleNoBlock()@). Otherwise,
+-- imports the module conventionally (using @PyImport_ImportModule()@).
+-- 
+-- Return the capsule&#x2019;s internal pointer on success. On failure, throw
+-- an exception. If the module could not be imported, and if importing in
+-- non-blocking mode, returns 'Nothing'.
+-- 
+importNamed :: Text -> Bool -> IO (Maybe (Ptr ()))
 importNamed name block =
-	maybeWith withText name $ \namePtr ->
+	withText name $ \namePtr ->
 	let noBlock = cFromBool (not block) in do
 	{# call PyErr_Clear as ^ #}
 	ptr <- {# call PyCapsule_Import as ^ #} namePtr noBlock
@@ -96,6 +119,14 @@ importNamed name block =
 			exceptionIf $ exc /= nullPtr
 			return Nothing
 
+-- | Determines whether or not a capsule is valid. A valid capsule's type is
+-- 'capsuleType', has a non-NULL pointer stored in it, and its internal name
+-- matches the name parameter. (See 'getPointer' for information on how
+-- capsule names are compared.)
+-- 
+-- In other words, if 'isValid' returns 'True', calls to any of the
+-- accessors (any function starting with @get@) are guaranteed to succeed.
+-- 
 isValid :: Capsule -> Maybe Text -> IO Bool
 isValid py name =
 	withObject py $ \pyPtr ->
@@ -103,6 +134,8 @@ isValid py name =
 	{# call PyCapsule_IsValid as ^ #} pyPtr namePtr
 	>>= checkBoolReturn
 
+-- | Set the void pointer inside the capsule. The pointer may not be @NULL@.
+-- 
 {# fun PyCapsule_SetPointer as setPointer
 	{ withObject* `Capsule'
 	, id `Ptr ()'
@@ -111,6 +144,8 @@ isValid py name =
 -- setDestructor :: Capsule -> Maybe Destructor -> IO ()
 -- setDestructor = undefined
 
+-- | Set the context pointer inside the capsule.
+-- 
 {# fun PyCapsule_SetContext as setContext
 	{ withObject* `Capsule'
 	, id `Ptr ()'

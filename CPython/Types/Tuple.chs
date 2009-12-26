@@ -44,6 +44,8 @@ toTuple xs =
 	{# call hscpython_poke_tuple #} (fromIntegral count) array
 	>>= stealObject
 
+-- | Convert any object implementing the iterator protocol to a 'Tuple'.
+-- 
 iterableToTuple :: Object iter => iter -> IO Tuple
 iterableToTuple iter = do
 	raw <- callObjectRaw tupleType =<< toTuple [toObject iter]
@@ -62,11 +64,17 @@ fromTuple py =
 	{ withObject* `Tuple'
 	} -> `Integer' checkIntReturn* #}
 
+-- | Return the object at a given index from a tuple, or throws @IndexError@
+-- if the index is out of bounds.
+-- 
 {# fun PyTuple_GetItem as getItem
 	{ withObject* `Tuple'
 	, fromIntegral `Integer'
 	} -> `SomeObject' peekObject* #}
 
+-- | Take a slice of a tuple from /low/ to /high/, and return it as a new
+-- tuple.
+-- 
 {# fun PyTuple_GetSlice as getSlice
 	{ withObject* `Tuple'
 	, fromIntegral `Integer'

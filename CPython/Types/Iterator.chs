@@ -59,17 +59,29 @@ instance Concrete CallableIterator where
 {# fun pure hscpython_PyCallIter_Type as callableIteratorType
 	{} -> `Type' peekStaticObject* #}
 
+-- | Return an iterator that works with a general sequence object, /seq/.
+-- The iteration ends when the sequence raises @IndexError@ for the
+-- subscripting operation.
+-- 
 {# fun PySeqIter_New as sequenceIteratorNew
 	`Sequence seq' =>
 	{ withObject* `seq'
 	} -> `SequenceIterator' stealObject* #}
 
+-- | Return a new iterator. The first parameter, /callable/, can be any
+-- Python callable object that can be called with no parameters; each call
+-- to it should return the next item in the iteration. When /callable/
+-- returns a value equal to /sentinel/, the iteration will be terminated.
+-- 
 {# fun PyCallIter_New as callableIteratorNew
 	`(Object callable, Object sentinel)' =>
 	{ withObject* `callable'
 	, withObject* `sentinel'
 	} -> `CallableIterator' stealObject* #}
 
+-- | Return the next value from the iteration, or 'Nothing' if there are no
+-- remaining items.
+-- 
 next :: Iterator iter => iter -> IO (Maybe SomeObject)
 next iter =
 	withObject iter $ \iterPtr -> do

@@ -51,6 +51,8 @@ toList xs =
 	{# call hscpython_poke_list #} (fromIntegral count) array
 	>>= stealObject
 
+-- | Convert any object implementing the iterator protocol to a 'List'.
+-- 
 iterableToList :: Object iter => iter -> IO List
 iterableToList iter = do
 	raw <- callObjectRaw listType =<< T.toTuple [toObject iter]
@@ -69,11 +71,17 @@ fromList py =
 	{ withObject* `List'
 	} -> `Integer' checkIntReturn* #}
 
+-- | Returns the object at a given position in the list. The position must be
+-- positive; indexing from the end of the list is not supported. If the
+-- position is out of bounds, throws an @IndexError@ exception.
+-- 
 {# fun PyList_GetItem as getItem
 	{ withObject* `List'
 	, fromIntegral `Integer'
 	} -> `SomeObject' peekObject* #}
 
+-- | Set the item at a given index.
+-- 
 setItem :: Object o => List -> Integer -> o -> IO ()
 setItem self index x =
 	withObject self $ \selfPtr ->
@@ -82,6 +90,9 @@ setItem self index x =
 	{# call PyList_SetItem as ^ #} selfPtr (fromIntegral index) xPtr
 	>>= checkStatusCode
 
+-- | Inserts /item/ into the list in front of the given index. Throws an
+-- exception if unsuccessful. Analogous to @list.insert(index, item)@.
+-- 
 {# fun PyList_Insert as insert
 	`Object item' =>
 	{ withObject* `List'
@@ -89,19 +100,38 @@ setItem self index x =
 	, withObject* `item'
 	} -> `()' checkStatusCode* #}
 
+-- | Append /item/ to the end of th list. Throws an exception if unsuccessful.
+-- Analogous to @list.append(item)@.
+-- 
 {# fun PyList_Append as append
 	`Object item' =>
 	{ withObject* `List'
 	, withObject* `item'
 	} -> `()' checkStatusCode* #}
 
+-- | Return a list of the objects in list containing the objects between
+-- the given indexes. Throws an exception if unsuccessful. Analogous to
+-- @list[low:high]@. Negative indices, as when slicing from Python, are not
+-- supported.
+-- 
 {# fun PyList_GetSlice as getSlice
 	{ withObject* `List'
 	, fromIntegral `Integer'
 	, fromIntegral `Integer'
 	} -> `List' stealObject* #}
 
-setSlice :: List -> Integer -> Integer -> Maybe List -> IO ()
+-- | Sets the slice of a list between /low/ and /high/ to the contents of
+-- a replacement list. Analogous to @list[low:high] = replacement@. The
+-- replacement may be 'Nothing', indicating the assignment of an empty list
+-- (slice deletion). Negative indices, as when slicing from Python, are not
+-- supported.
+-- 
+setSlice
+	:: List
+	-> Integer -- ^ Low
+	-> Integer -- ^ High
+	-> Maybe List -- ^ Replacement
+	-> IO ()
 setSlice self low high items = let
 	low' = fromIntegral low
 	high' = fromIntegral high in
@@ -110,14 +140,22 @@ setSlice self low high items = let
 	{# call PyList_SetSlice as ^ #} selfPtr low' high' itemsPtr
 	>>= checkStatusCode
 
+-- | Sort the items of a list in place. This is equivalent to @list.sort()@.
+-- 
 {# fun PyList_Sort as sort
 	{ withObject* `List'
 	} -> `()' checkStatusCode* #}
 
+-- | Reverses the items of a list in place. This is equivalent to
+-- @list.reverse()@.
+-- 
 {# fun PyList_Reverse as reverse
 	{ withObject* `List'
 	} -> `()' checkStatusCode* #}
 
+-- | Return a new 'Tuple' containing the contents of a list; equivalent to
+-- @tuple(list)@.
+-- 
 {# fun PyList_AsTuple as toTuple
 	{ withObject* `List'
 	} -> `Tuple' stealObject* #}

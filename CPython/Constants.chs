@@ -26,12 +26,18 @@ import CPython.Internal
 
 #include <hscpython-shim.h>
 
+-- | The Python @None@ object, denoting lack of value.
+-- 
 {# fun hscpython_Py_None as none
 	{} -> `SomeObject' peekObject* #}
 
+-- | The Python @True@ object.
+-- 
 {# fun hscpython_Py_True as true
 	{} -> `SomeObject' peekObject* #}
 
+-- | The Python @False@ object.
+-- 
 {# fun hscpython_Py_False as false
 	{} -> `SomeObject' peekObject* #}
 

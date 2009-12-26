@@ -14,6 +14,13 @@
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
+
+-- | Any functionality not listed below is best accessed using the either
+-- the 'Object' protocol (including 'callMethod', 'richCompare', 'hash',
+-- 'repr', 'isTrue', and 'getIter') or the 'Number' protocol (including 'and',
+-- 'subtract', 'or', 'xor', 'inPlaceAnd', 'inPlaceSubtract', 'inPlaceOr',
+-- and 'inPlaceXor').
+-- 
 module CPython.Types.Set
 	( AnySet
 	, Set
@@ -72,11 +79,19 @@ toSet xs = toTuple xs >>= iterableToSet
 toFrozenSet :: [SomeObject] -> IO FrozenSet
 toFrozenSet xs = toTuple xs >>= iterableToFrozenSet
 
+-- | Return a new 'Set' from the contents of an iterable 'Object'. The object
+-- may be 'Nothing' to create an empty set. Throws a @TypeError@ if the object
+-- is not iterable.
+-- 
 {# fun PySet_New as iterableToSet
 	`Object obj' =>
 	{ withObject* `obj'
 	} -> `Set' stealObject* #}
 
+-- | Return a new 'FrozenSet' from the contents of an iterable 'Object'. The
+-- object may be 'Nothing' to create an empty frozen set. Throws a @TypeError@
+-- if the object is not iterable.
+-- 
 {# fun PyFrozenSet_New as iterableToFrozenSet
 	`Object obj' =>
 	{ withObject* `obj'
@@ -85,33 +100,57 @@ toFrozenSet xs = toTuple xs >>= iterableToFrozenSet
 fromSet :: AnySet set => set -> IO [SomeObject]
 fromSet set = iterableToTuple set >>= fromTuple
 
+-- | Return the size of a 'Set' or 'FrozenSet'.
+-- 
 {# fun PySet_Size as size
 	`AnySet set' =>
 	{ withObject* `set'
 	} -> `Integer' checkIntReturn* #}
 
+-- | Return 'True' if found, 'False' if not found. Unlike the Python
+-- @__contains__()@ method, this computation does not automatically convert
+-- unhashable 'Set's into temporary 'FrozenSet's. Throws a @TypeError@ if the
+-- key is unhashable.
+-- 
 {# fun PySet_Contains as contains
 	`(AnySet set, Object key)' =>
 	{ withObject* `set'
 	, withObject* `key'
 	} -> `Bool' checkBoolReturn* #}
 
+-- | Add /key/ to a 'Set'. Also works with 'FrozenSet' (like
+-- 'CPython.Types.Tuple.setItem' it can be used to fill-in the values of
+-- brand new 'FrozenSet's before they are exposed to other code). Throws a
+-- @TypeError@ if the key is unhashable. Throws a @MemoryError@ if there is
+-- no room to grow.
+-- 
 {# fun PySet_Add as add
 	`(AnySet set, Object key)' =>
 	{ withObject* `set'
 	, withObject* `key'
 	} -> `()' checkStatusCode* #}
 
+-- | Return 'True' if found and removed, 'False' if not found (no action
+-- taken). Does not throw @KeyError@ for missing keys. Throws a @TypeError@
+-- if /key/ is unhashable. Unlike the Python @discard()@ method, this
+-- computation does not automatically convert unhashable sets into temporary
+-- 'FrozenSet's.
+-- 
 {# fun PySet_Discard as discard
 	`Object key' =>
 	{ withObject* `Set'
 	, withObject* `key'
 	} -> `Bool' checkBoolReturn* #}
 
+-- | Return an arbitrary object in the set, and removes the object from the
+-- set. Throws @KeyError@ if the set is empty.
+-- 
 {# fun PySet_Pop as pop
 	{ withObject* `Set'
 	} -> `SomeObject' stealObject* #}
 
+-- | Remove all elements from a set.
+-- 
 {# fun PySet_Clear as clear
 	{ withObject* `Set'
 	} -> `()' checkStatusCode* #}

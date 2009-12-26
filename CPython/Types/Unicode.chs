@@ -41,7 +41,6 @@ module CPython.Types.Unicode
 	, find
 	, count
 	, replace
-	, compare
 	, format
 	, contains
 	) where
@@ -111,6 +110,14 @@ fromUnicode obj = withObject obj $ \ptr -> do
 	{ withObject* `Unicode'
 	} -> `Integer' checkIntReturn* #}
 
+-- | Coerce an encoded object /obj/ to an Unicode object.
+-- 
+-- 'Bytes' and other char buffer compatible objects are decoded according to
+-- the given encoding and error handling mode.
+-- 
+-- All other objects, including 'Unicode' objects, cause a @TypeError@ to be
+-- thrown.
+-- 
 {# fun hscpython_PyUnicode_FromEncodedObject as fromEncodedObject
 	`Object obj' =>
 	{ withObject* `obj'
@@ -118,17 +125,27 @@ fromUnicode obj = withObject obj $ \ptr -> do
 	, withErrors* `ErrorHandling'
 	} -> `Unicode' stealObject* #}
 
-{# fun hscpython_PyUnicode_FromObject as fromObject
-	`Object self ' =>
-	{ withObject* `self'
-	} -> `Unicode' stealObject* #}
+-- | Shortcut for @'fromEncodedObject' \"utf-8\" 'Strict'@
+-- 
+fromObject :: Object obj => obj -> IO Unicode
+fromObject obj = fromEncodedObject obj (T.pack "utf-8") Strict
 
+-- | Encode a 'Unicode' object and return the result as 'Bytes' object.
+-- The encoding and error mode have the same meaning as the parameters of
+-- the the @str.encode()@ method. The codec to be used is looked up using
+-- the Python codec registry.
+-- 
 {# fun hscpython_PyUnicode_AsEncodedString as encode
 	{ withObject* `Unicode'
 	, withText* `Encoding'
 	, withErrors* `ErrorHandling'
 	} -> `Bytes' stealObject* #}
 
+-- | Create a 'Unicode' object by decoding a 'Bytes' object. The encoding and
+-- error mode have the same meaning as the parameters of the the
+-- @str.encode()@ method. The codec to be used is looked up using the Python
+-- codec registry.
+-- 
 decode :: Bytes -> Encoding -> ErrorHandling -> IO Unicode
 decode bytes enc errors =
 	withObject bytes $ \bytesPtr ->
@@ -148,7 +165,16 @@ decode bytes enc errors =
 	, withObject* `Unicode'
 	} -> `Unicode' stealObject* #}
 
-split :: Unicode -> Maybe Unicode -> Maybe Integer -> IO List
+-- | Split a string giving a 'List' of 'Unicode' objects. If the separator is
+-- 'Nothing', splitting will be done at all whitespace substrings. Otherwise,
+-- splits occur at the given separator. Separators are not included in the
+-- resulting list.
+-- 
+split
+	:: Unicode
+	-> Maybe Unicode -- ^ Separator
+	-> Maybe Integer -- ^ Maximum splits
+	-> IO List
 split s sep maxsplit =
 	withObject s $ \sPtr ->
 	maybeWith withObject sep $ \sepPtr ->
@@ -156,11 +182,27 @@ split s sep maxsplit =
 	{# call hscpython_PyUnicode_Split #} sPtr sepPtr max'
 	>>= stealObject
 
+-- | Split a 'Unicode' string at line breaks, returning a list of 'Unicode'
+-- strings. CRLF is considered to be one line break. If the second parameter
+-- is 'False', the line break characters are not included in the resulting
+-- strings.
+-- 
 {# fun hscpython_PyUnicode_Splitlines as splitLines
 	{ withObject* `Unicode'
 	, `Bool'
 	} -> `List' stealObject* #}
 
+-- | Translate a string by applying a character mapping table to it.
+-- 
+-- The mapping table must map Unicode ordinal integers to Unicode ordinal
+-- integers or @None@ (causing deletion of the character).
+-- 
+-- Mapping tables need only provide the @__getitem__()@ interface;
+-- dictionaries and sequences work well. Unmapped character ordinals (ones
+-- which cause a @LookupError@) are left untouched and are copied as-is.
+-- 
+-- The error mode has the usual meaning for codecs.
+-- 
 {# fun hscpython_PyUnicode_Translate as translate
 	`Object table' =>
 	{ withObject* `Unicode'
@@ -168,6 +210,8 @@ split s sep maxsplit =
 	, withErrors* `ErrorHandling'
 	} -> `Unicode' stealObject* #}
 
+-- | Join a sequence of strings using the given separator.
+-- 
 {# fun hscpython_PyUnicode_Join as join
 	`Sequence seq' =>
 	{ withObject* `Unicode'
@@ -177,7 +221,16 @@ split s sep maxsplit =
 data MatchDirection = Prefix | Suffix
 	deriving (Show, Eq)
 
-tailMatch :: Unicode -> Unicode -> Integer -> Integer -> MatchDirection -> IO Bool
+-- | Return 'True' if the substring matches @string*[*start:end]@ at the
+-- given tail end (either a 'Prefix' or 'Suffix' match), 'False' otherwise.
+-- 
+tailMatch
+	:: Unicode -- ^ String
+	-> Unicode -- ^ Substring
+	-> Integer -- ^ Start
+	-> Integer -- ^ End
+	-> MatchDirection
+	-> IO Bool
 tailMatch str substr start end dir =
 	withObject str $ \strPtr ->
 	withObject substr $ \substrPtr ->
@@ -192,7 +245,17 @@ tailMatch str substr start end dir =
 data FindDirection = Forwards | Backwards
 	deriving (Show, Eq)
 
-find :: Unicode -> Unicode -> Integer -> Integer -> FindDirection -> IO (Maybe Integer)
+-- | Return the first position of the substring in @string*[*start:end]@
+-- using the given direction. The return value is the index of the first
+-- match; a value of 'Nothing' indicates that no match was found.
+-- 
+find
+	:: Unicode -- ^ String
+	-> Unicode -- ^ Substring
+	-> Integer -- ^ Start
+	-> Integer -- ^ End
+	-> FindDirection
+	-> IO (Maybe Integer)
 find str substr start end dir =
 	withObject str $ \strPtr ->
 	withObject substr $ \substrPtr -> do
@@ -208,14 +271,32 @@ find str substr start end dir =
 		x | x >= 0 -> return . Just . toInteger $ x
 		x -> throwIO . ErrorCall $ "Invalid return code: " ++ show x
 
-{# fun hscpython_PyUnicode_Count as count
-	{ withObject* `Unicode'
-	, withObject* `Unicode'
-	, fromInteger `Integer'
-	, fromInteger `Integer'
-	} -> `Integer' checkIntReturn* #}
+-- | Return the number of non-overlapping occurrences of the substring in
+-- @string[start:end]@.
+-- 
+count
+	:: Unicode -- ^ String
+	-> Unicode -- ^ Substring
+	-> Integer -- ^ Start
+	-> Integer -- ^ End
+	-> IO Integer
+count str substr start end =
+	withObject str $ \str' ->
+	withObject substr $ \substr' ->
+	let start' = fromInteger start in
+	let end' = fromInteger end in
+	{# call hscpython_PyUnicode_Count #} str' substr' start' end'
+	>>= checkIntReturn
 
-replace :: Unicode -> Unicode -> Unicode -> Maybe Integer -> IO Unicode
+-- | Replace occurrences of the substring with a given replacement. If the
+-- maximum count is 'Nothing', replace all occurences.
+-- 
+replace
+	:: Unicode -- ^ String
+	-> Unicode -- ^ Substring
+	-> Unicode -- ^ Replacement
+	-> Maybe Integer -- ^ Maximum count
+	-> IO Unicode
 replace str substr replstr maxcount =
 	withObject str $ \strPtr ->
 	withObject substr $ \substrPtr ->
@@ -226,12 +307,20 @@ replace str substr replstr maxcount =
 	{# call hscpython_PyUnicode_Replace #} strPtr substrPtr replstrPtr maxcount'
 	>>= stealObject
 
+-- | Return a new 'Unicode' object from the given format and args; this is
+-- analogous to @format % args@.
+-- 
 {# fun hscpython_PyUnicode_Format as format
 	{ withObject* `Unicode'
 	, withObject* `Tuple'
 	} -> `Unicode' stealObject* #}
 
+-- | Check whether /element/ is contained in a string.
+-- 
+-- /element/ has to coerce to a one element string.
+-- 
 {# fun hscpython_PyUnicode_Contains as contains
+	`Object element' =>
 	{ withObject* `Unicode'
-	, withObject* `Unicode'
+	, withObject* `element'
 	} -> `Bool' checkBoolReturn* #}
