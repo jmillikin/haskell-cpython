@@ -41,6 +41,7 @@ PyTypeObject *hscpython_PySeqIter_Type ();
 PyTypeObject *hscpython_PyCallIter_Type ();
 PyTypeObject *hscpython_PySlice_Type ();
 PyTypeObject *hscpython_PyModule_Type ();
+PyTypeObject *hscpython_PyCapsule_Type ();
 
 /* Constants */
 PyObject *hscpython_Py_None ();

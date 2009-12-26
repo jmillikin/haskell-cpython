@@ -27,6 +27,7 @@ library
     CPython.Types
     CPython.Types.ByteArray
     CPython.Types.Bytes
+    CPython.Types.Capsule
     CPython.Types.Cell
     CPython.Types.Code
     CPython.Types.Complex
