@@ -1,3 +1,6 @@
+#ifndef HSCPYTHON_SHIM_H
+#define HSCPYTHON_SHIM_H
+
 #include <Python.h>
 
 /* Initialization helpers */
@@ -75,3 +78,5 @@ PyObject *hscpython_poke_list (size_t, PyObject **);
 /* Tuples */
 void hscpython_peek_tuple (PyObject *, Py_ssize_t, PyObject **);
 PyObject *hscpython_poke_tuple (size_t, PyObject **);
+
+#endif
