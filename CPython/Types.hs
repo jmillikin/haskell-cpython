@@ -24,10 +24,10 @@ module CPython.Types
 	, Complex
 	, Dictionary
 	, Exception
-	, Float
+	, CPython.Types.Float.Float
 	, Function
 	, InstanceMethod
-	, Integer
+	, CPython.Types.Integer.Integer
 	, SequenceIterator
 	, CallableIterator
 	, Iterator
@@ -77,8 +77,8 @@ module CPython.Types
 	, fromComplex
 	, toFloat
 	, fromFloat
-	, toInteger
-	, fromInteger
+	, CPython.Types.Integer.toInteger
+	, CPython.Types.Integer.fromInteger
 	, toList
 	, iterableToList
 	, fromList
@@ -93,7 +93,6 @@ module CPython.Types
 	, toUnicode
 	, fromUnicode
 	) where
-import qualified Prelude as Prelude
 import CPython.Types.ByteArray
 import CPython.Types.Bytes
 import CPython.Types.Capsule

@@ -28,7 +28,6 @@ module CPython.Protocols.Mapping
 	, items
 	) where
 import CPython.Internal
-import CPython.Types.Dictionary (Dictionary)
 
 #include <hscpython-shim.h>
 
