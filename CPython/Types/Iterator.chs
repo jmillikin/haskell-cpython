@@ -27,7 +27,6 @@ module CPython.Types.Iterator
 	, next
 	) where
 import CPython.Internal
-import CPython.Protocols.Sequence (Sequence)
 
 #include <hscpython-shim.h>
 

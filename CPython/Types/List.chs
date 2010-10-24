@@ -32,7 +32,6 @@ module CPython.Types.List
 	, toTuple
 	) where
 import Prelude hiding (reverse, length)
-import qualified Prelude as Prelude
 import CPython.Internal hiding (new)
 import qualified CPython.Types.Tuple as T
 

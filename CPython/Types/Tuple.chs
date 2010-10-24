@@ -26,7 +26,6 @@ module CPython.Types.Tuple
 	, setItem
 	) where
 import Prelude hiding (length)
-import qualified Prelude as Prelude
 import CPython.Internal hiding (new)
 
 #include <hscpython-shim.h>
