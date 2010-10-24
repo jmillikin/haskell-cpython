@@ -30,7 +30,6 @@ module CPython.Types
 	, CPython.Types.Integer.Integer
 	, SequenceIterator
 	, CallableIterator
-	, Iterator
 	, List
 	, Method
 	, Module

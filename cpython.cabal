@@ -1,5 +1,5 @@
 name: cpython
-version: 3.1.1.0
+version: 3.1.2.0
 synopsis: Bindings for libpython
 license: GPL-3
 license-file: license.txt
@@ -64,6 +64,7 @@ library
     CPython.Types.Type
     CPython.Types.Unicode
     CPython.Types.WeakReference
+    CPython.Protocols.Iterator
     CPython.Protocols.Mapping
     CPython.Protocols.Number
     CPython.Protocols.Object

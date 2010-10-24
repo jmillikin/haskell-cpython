@@ -45,13 +45,6 @@ import CPython.Types.Unicode (Unicode)
 
 #include <hscpython-shim.h>
 
-instance Object SomeSequence where
-	toObject (SomeSequence x) = SomeObject x
-	fromForeignPtr = SomeSequence
-
-instance Sequence SomeSequence where
-	toSequence = id
-
 instance Sequence ByteArray where
 	toSequence = unsafeCastToSequence
 
@@ -66,12 +59,6 @@ instance Sequence Tuple where
 
 instance Sequence Unicode where
 	toSequence = unsafeCastToSequence
-
-unsafeCastToSequence :: Object a => a -> SomeSequence
-unsafeCastToSequence x = case toObject x of
-	SomeObject ptr -> let
-		ptr' = castForeignPtr ptr :: ForeignPtr SomeSequence
-		in SomeSequence ptr'
 
 -- | Attempt to convert an object to a generic 'Sequence'. If the object does
 -- not implement the sequence protocol, returns 'Nothing'.

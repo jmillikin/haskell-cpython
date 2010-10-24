@@ -59,6 +59,9 @@ int hscpython_PyObject_DelAttr(PyObject *o, PyObject *name)
 int hscpython_PyObject_TypeCheck (PyObject *o, PyTypeObject *type)
 { return PyObject_TypeCheck (o, type); }
 
+int hscpython_PyIter_Check(PyObject *o)
+{ return PyIter_Check(o); }
+
 /* Types */
 PyTypeObject *hscpython_PyType_Type ()
 { return &PyType_Type; }

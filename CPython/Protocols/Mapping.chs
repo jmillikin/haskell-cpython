@@ -31,21 +31,8 @@ import CPython.Internal
 
 #include <hscpython-shim.h>
 
-instance Object SomeMapping where
-	toObject (SomeMapping x) = SomeObject x
-	fromForeignPtr = SomeMapping
-
-instance Mapping SomeMapping where
-	toMapping = id
-
 instance Mapping Dictionary where
 	toMapping = unsafeCastToMapping
-
-unsafeCastToMapping :: Object a => a -> SomeMapping
-unsafeCastToMapping x = case toObject x of
-	SomeObject ptr -> let
-		ptr' = castForeignPtr ptr :: ForeignPtr SomeMapping
-		in SomeMapping ptr'
 
 castToMapping :: Object a => a -> IO (Maybe SomeMapping)
 castToMapping obj =

@@ -15,26 +15,23 @@
 -- 
 {-# LANGUAGE ForeignFunctionInterface #-}
 module CPython.Types.Iterator
-	( Iterator
-	, SequenceIterator
+	( SequenceIterator
 	, sequenceIteratorType
 	, sequenceIteratorNew
 	
 	, CallableIterator
 	, callableIteratorType
 	, callableIteratorNew
-	
-	, next
 	) where
 import CPython.Internal
 
 #include <hscpython-shim.h>
 
-class Object a => Iterator a
-
 newtype SequenceIterator = SequenceIterator (ForeignPtr SequenceIterator)
 
-instance Iterator SequenceIterator
+instance Iterator SequenceIterator where
+	toIterator = unsafeCastToIterator
+
 instance Object SequenceIterator where
 	toObject (SequenceIterator x) = SomeObject x
 	fromForeignPtr = SequenceIterator
@@ -44,7 +41,9 @@ instance Concrete SequenceIterator where
 
 newtype CallableIterator = CallableIterator (ForeignPtr CallableIterator)
 
-instance Iterator CallableIterator
+instance Iterator CallableIterator where
+	toIterator = unsafeCastToIterator
+
 instance Object CallableIterator where
 	toObject (CallableIterator x) = SomeObject x
 	fromForeignPtr = CallableIterator
@@ -58,7 +57,7 @@ instance Concrete CallableIterator where
 {# fun pure hscpython_PyCallIter_Type as callableIteratorType
 	{} -> `Type' peekStaticObject* #}
 
--- | Return an iterator that works with a general sequence object, /seq/.
+-- | Return an 'Iterator' that works with a general sequence object, /seq/.
 -- The iteration ends when the sequence raises @IndexError@ for the
 -- subscripting operation.
 -- 
@@ -67,7 +66,7 @@ instance Concrete CallableIterator where
 	{ withObject* `seq'
 	} -> `SequenceIterator' stealObject* #}
 
--- | Return a new iterator. The first parameter, /callable/, can be any
+-- | Return a new 'Iterator'. The first parameter, /callable/, can be any
 -- Python callable object that can be called with no parameters; each call
 -- to it should return the next item in the iteration. When /callable/
 -- returns a value equal to /sentinel/, the iteration will be terminated.
@@ -77,17 +76,3 @@ instance Concrete CallableIterator where
 	{ withObject* `callable'
 	, withObject* `sentinel'
 	} -> `CallableIterator' stealObject* #}
-
--- | Return the next value from the iteration, or 'Nothing' if there are no
--- remaining items.
--- 
-next :: Iterator iter => iter -> IO (Maybe SomeObject)
-next iter =
-	withObject iter $ \iterPtr -> do
-	raw <- {# call PyIter_Next as ^ #} iterPtr
-	if raw == nullPtr
-		then do
-			err <- {# call PyErr_Occurred as ^ #}
-			exceptionIf $ err /= nullPtr
-			return Nothing
-		else fmap Just $ stealObject raw
