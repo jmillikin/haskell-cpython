@@ -56,10 +56,20 @@ module CPython.Internal
 	, checkIntReturn
 	
 	-- * Other classes
+	-- ** Mapping
 	, Mapping (..)
 	, SomeMapping (..)
+	, unsafeCastToMapping
+	
+	-- ** Sequence
 	, Sequence (..)
 	, SomeSequence (..)
+	, unsafeCastToSequence
+	
+	-- ** Iterator
+	, Iterator (..)
+	, SomeIterator (..)
+	, unsafeCastToIterator
 	) where
 import Control.Applicative ((<$>))
 import qualified Control.Exception as E
@@ -208,7 +218,51 @@ data SomeMapping = forall a. (Mapping a) => SomeMapping (ForeignPtr a)
 class Object a => Mapping a where
 	toMapping :: a -> SomeMapping
 
+instance Object SomeMapping where
+	toObject (SomeMapping x) = SomeObject x
+	fromForeignPtr = SomeMapping
+
+instance Mapping SomeMapping where
+	toMapping = id
+
+unsafeCastToMapping :: Object a => a -> SomeMapping
+unsafeCastToMapping x = case toObject x of
+	SomeObject ptr -> let
+		ptr' = castForeignPtr ptr :: ForeignPtr SomeMapping
+		in SomeMapping ptr'
+
 data SomeSequence = forall a. (Sequence a) => SomeSequence (ForeignPtr a)
 
 class Object a => Sequence a where
 	toSequence :: a -> SomeSequence
+
+instance Object SomeSequence where
+	toObject (SomeSequence x) = SomeObject x
+	fromForeignPtr = SomeSequence
+
+instance Sequence SomeSequence where
+	toSequence = id
+
+unsafeCastToSequence :: Object a => a -> SomeSequence
+unsafeCastToSequence x = case toObject x of
+	SomeObject ptr -> let
+		ptr' = castForeignPtr ptr :: ForeignPtr SomeSequence
+		in SomeSequence ptr'
+
+data SomeIterator = forall a. (Iterator a) => SomeIterator (ForeignPtr a)
+
+class Object a => Iterator a where
+	toIterator :: a -> SomeIterator
+
+instance Object SomeIterator where
+	toObject (SomeIterator x) = SomeObject x
+	fromForeignPtr = SomeIterator
+
+instance Iterator SomeIterator where
+	toIterator = id
+
+unsafeCastToIterator :: Object a => a -> SomeIterator
+unsafeCastToIterator x = case toObject x of
+	SomeObject ptr -> let
+		ptr' = castForeignPtr ptr :: ForeignPtr SomeIterator
+		in SomeIterator ptr'

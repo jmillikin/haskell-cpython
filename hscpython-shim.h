@@ -12,6 +12,7 @@ void hscpython_Py_INCREF (PyObject *);
 void hscpython_Py_DECREF (PyObject *);
 int hscpython_PyObject_DelAttr(PyObject *, PyObject *);
 int hscpython_PyObject_TypeCheck (PyObject *, PyTypeObject *);
+int hscpython_PyIter_Check(PyObject *);
 
 enum HSCPythonComparisonEnum
 { HSCPYTHON_LT = Py_LT
