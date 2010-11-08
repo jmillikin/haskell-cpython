@@ -179,7 +179,7 @@ foreign import ccall safe "hscpython-shim.h Py_GetProgramName"
 -- the @argv[0]@ argument to the @main@ procedure of the program. This is
 -- used by 'getPath' and some other computations below to find the Python
 -- run-time libraries relative to the interpreter executable. The default
--- value is @"python"@. No code in the Python interpreter will change the
+-- value is @\"python\"@. No code in the Python interpreter will change the
 -- program name.
 -- 
 setProgramName :: Text -> IO ()
