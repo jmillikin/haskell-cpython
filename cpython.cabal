@@ -1,5 +1,5 @@
 name: cpython
-version: 3.1.2.0
+version: 3.1.2.1
 synopsis: Bindings for libpython
 license: GPL-3
 license-file: license.txt
@@ -34,7 +34,7 @@ library
   build-depends:
       base >=4 && < 5
     , bytestring >= 0.9 && < 0.10
-    , text >= 0.1 && < 0.11
+    , text >= 0.1 && < 0.12
 
   build-tools:
     c2hs >= 0.15
