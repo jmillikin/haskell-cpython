@@ -136,7 +136,7 @@ cast obj = do
 	`Object self' =>
 	{ withObject* `self'
 	, withObject* `U.Unicode'
-	} -> `Bool' #}
+	} -> `Bool' checkBoolReturn* #}
 
 -- | Retrieve an attribute with the given name from object /self/. Returns
 -- the attribute value on success, and throws an exception on failure. This
