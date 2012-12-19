@@ -337,8 +337,8 @@ foreign import ccall safe "hscpython-shim.h PySys_SetArgv"
 -- | Return the default &#x201c;home&#x201d;, that is, the value set by a
 -- previous call to 'setPythonHome', or the value of the @PYTHONHOME@
 -- environment variable if it is set.
-getPythonHome :: IO Text
-getPythonHome = pyGetPythonHome >>= peekTextW
+getPythonHome :: IO (Maybe Text)
+getPythonHome = pyGetPythonHome >>= peekMaybeTextW
 
 foreign import ccall safe "hscpython-shim.h Py_GetPythonHome"
 	pyGetPythonHome :: IO CWString
@@ -347,8 +347,8 @@ foreign import ccall safe "hscpython-shim.h Py_GetPythonHome"
 -- of the standard Python libraries. The libraries are searched in
 -- @/home/\/lib\//python version/@ and @/home/\/lib\//python version/@. No
 -- code in the Python interpreter will change the Python home.
-setPythonHome :: Text -> IO ()
-setPythonHome name = withTextW name cSetPythonHome
+setPythonHome :: Maybe Text -> IO ()
+setPythonHome name = withMaybeTextW name cSetPythonHome
 
 foreign import ccall safe "hscpython-shim.h hscpython_SetPythonHome"
 	cSetPythonHome :: CWString -> IO ()
