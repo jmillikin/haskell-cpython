@@ -1,19 +1,21 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 -- Copyright (C) 2009 John Millikin <jmillikin@gmail.com>
--- 
+--
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
--- 
-{-# LANGUAGE ForeignFunctionInterface #-}
+--
+
 module CPython.Types.Module
 	( Module
 	, moduleType
@@ -27,13 +29,15 @@ module CPython.Types.Module
 	, importModule
 	, reload
 	) where
-import Prelude hiding (toInteger)
-import Data.Text (Text)
-import CPython.Internal hiding (new)
-import CPython.Types.Integer (toInteger)
-import CPython.Types.Unicode (toUnicode)
 
 #include <hscpython-shim.h>
+
+import           Prelude hiding (toInteger)
+import           Data.Text (Text)
+
+import           CPython.Internal hiding (new)
+import           CPython.Types.Integer (toInteger)
+import           CPython.Types.Unicode (toUnicode)
 
 newtype Module = Module (ForeignPtr Module)
 
@@ -50,7 +54,6 @@ instance Concrete Module where
 -- | Return a new module object with the @__name__@ attribute set. Only the
 -- module&#x2019;s @__doc__@ and @__name__@ attributes are filled in; the
 -- caller is responsible for providing a @__file__@ attribute.
--- 
 {# fun PyModule_New as new
 	{ withText* `Text'
 	} -> `Module' stealObject* #}
@@ -59,14 +62,12 @@ instance Concrete Module where
 -- this object is the same as the @__dict__@ attribute of the module. This
 -- computation never fails. It is recommended extensions use other
 -- computations rather than directly manipulate a module&#x2019;s @__dict__@.
--- 
 {# fun PyModule_GetDict as getDictionary
 	{ withObject* `Module'
 	} -> `Dictionary' peekObject* #}
 
 -- | Returns a module&#x2019;s @__name__@ value. If the module does not
 -- provide one, or if it is not a string, throws @SystemError@.
--- 
 getName :: Module -> IO Text
 getName py =
 	withObject py $ \py' -> do
@@ -77,7 +78,6 @@ getName py =
 -- | Returns the name of the file from which a module was loaded using the
 -- module&#x2019;s @__file__@ attribute. If this is not defined, or if it is
 -- not a string, throws @SystemError@.
--- 
 getFilename :: Module -> IO Text
 getFilename py =
 	withObject py $ \py' -> do
@@ -88,7 +88,6 @@ getFilename py =
 -- | Add an object to a module with the given name. This is a convenience
 -- computation which can be used from the module&#x2019;s initialization
 -- computation.
--- 
 addObject :: Object value => Module -> Text -> value -> IO ()
 addObject py name val =
 	withObject py $ \py' ->
@@ -100,13 +99,11 @@ addObject py name val =
 
 -- | Add an integer constant to a module. This convenience computation can be
 -- used from the module&#x2019;s initialization computation.
--- 
 addIntegerConstant :: Module -> Text -> Integer -> IO ()
 addIntegerConstant m name value = toInteger value >>= addObject m name
 
 -- | Add a string constant to a module. This convenience computation can be
 -- used from the module&#x2019;s initialization computation.
--- 
 addTextConstant :: Module -> Text -> Text -> IO ()
 addTextConstant m name value = toUnicode value >>= addObject m name
 
@@ -115,9 +112,8 @@ addTextConstant m name value = toUnicode value >>= addObject m name
 -- invokes the @__import__()@ computation from the @__builtins__@ of the
 -- current globals. This means that the import is done using whatever import
 -- hooks are installed in the current environment.
--- 
+--
 -- This computation always uses absolute imports.
--- 
 importModule :: Text -> IO Module
 importModule name = do
 	pyName <- toUnicode name
@@ -127,7 +123,6 @@ importModule name = do
 
 -- | Reload a module. If an error occurs, an exception is thrown and the old
 -- module still exists.
--- 
 {# fun PyImport_ReloadModule as reload
 	{ withObject* `Module'
 	} -> `Module' stealObject* #}

@@ -1,19 +1,20 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 -- Copyright (C) 2009 John Millikin <jmillikin@gmail.com>
--- 
+--
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
--- 
-{-# LANGUAGE ForeignFunctionInterface #-}
+
 module CPython.Types.Tuple
 	( Tuple
 	, tupleType
@@ -25,10 +26,12 @@ module CPython.Types.Tuple
 	, getSlice
 	, setItem
 	) where
-import Prelude hiding (length)
-import CPython.Internal hiding (new)
 
 #include <hscpython-shim.h>
+
+import           Prelude hiding (length)
+
+import           CPython.Internal hiding (new)
 
 instance Concrete Tuple where
 	concreteType _ = tupleType
@@ -44,7 +47,6 @@ toTuple xs =
 	>>= stealObject
 
 -- | Convert any object implementing the iterator protocol to a 'Tuple'.
--- 
 iterableToTuple :: Object iter => iter -> IO Tuple
 iterableToTuple iter = do
 	raw <- callObjectRaw tupleType =<< toTuple [toObject iter]
@@ -65,7 +67,6 @@ fromTuple py =
 
 -- | Return the object at a given index from a tuple, or throws @IndexError@
 -- if the index is out of bounds.
--- 
 {# fun PyTuple_GetItem as getItem
 	{ withObject* `Tuple'
 	, fromIntegral `Integer'
@@ -73,7 +74,6 @@ fromTuple py =
 
 -- | Take a slice of a tuple from /low/ to /high/, and return it as a new
 -- tuple.
--- 
 {# fun PyTuple_GetSlice as getSlice
 	{ withObject* `Tuple'
 	, fromIntegral `Integer'

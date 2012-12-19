@@ -1,19 +1,20 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 -- Copyright (C) 2009 John Millikin <jmillikin@gmail.com>
--- 
+--
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
--- 
-{-# LANGUAGE ForeignFunctionInterface #-}
+
 module CPython.Types.Unicode
 	(
 	-- * Unicode objects
@@ -44,18 +45,21 @@ module CPython.Types.Unicode
 	, format
 	, contains
 	) where
+
 #include <hscpython-shim.h>
 
-import Prelude hiding (length)
-import Control.Exception (ErrorCall (..), throwIO)
+import           Prelude hiding (length)
+import           Control.Exception (ErrorCall (..), throwIO)
 import qualified Data.Text as T
+
 #ifdef Py_UNICODE_WIDE
-import Data.Char (chr, ord)
+import           Data.Char (chr, ord)
 #else
 import qualified Data.Text.Foreign as TF
 #endif
-import CPython.Internal
-import CPython.Types.Bytes (Bytes)
+
+import           CPython.Internal
+import           CPython.Types.Bytes (Bytes)
 
 newtype Unicode = Unicode (ForeignPtr Unicode)
 
@@ -111,13 +115,12 @@ fromUnicode obj = withObject obj $ \ptr -> do
 	} -> `Integer' checkIntReturn* #}
 
 -- | Coerce an encoded object /obj/ to an Unicode object.
--- 
+--
 -- 'Bytes' and other char buffer compatible objects are decoded according to
 -- the given encoding and error handling mode.
--- 
+--
 -- All other objects, including 'Unicode' objects, cause a @TypeError@ to be
 -- thrown.
--- 
 {# fun hscpython_PyUnicode_FromEncodedObject as fromEncodedObject
 	`Object obj' =>
 	{ withObject* `obj'
@@ -126,7 +129,6 @@ fromUnicode obj = withObject obj $ \ptr -> do
 	} -> `Unicode' stealObject* #}
 
 -- | Shortcut for @'fromEncodedObject' \"utf-8\" 'Strict'@
--- 
 fromObject :: Object obj => obj -> IO Unicode
 fromObject obj = fromEncodedObject obj (T.pack "utf-8") Strict
 
@@ -134,7 +136,6 @@ fromObject obj = fromEncodedObject obj (T.pack "utf-8") Strict
 -- The encoding and error mode have the same meaning as the parameters of
 -- the the @str.encode()@ method. The codec to be used is looked up using
 -- the Python codec registry.
--- 
 {# fun hscpython_PyUnicode_AsEncodedString as encode
 	{ withObject* `Unicode'
 	, withText* `Encoding'
@@ -145,7 +146,6 @@ fromObject obj = fromEncodedObject obj (T.pack "utf-8") Strict
 -- error mode have the same meaning as the parameters of the the
 -- @str.encode()@ method. The codec to be used is looked up using the Python
 -- codec registry.
--- 
 decode :: Bytes -> Encoding -> ErrorHandling -> IO Unicode
 decode bytes enc errors =
 	withObject bytes $ \bytesPtr ->
@@ -169,7 +169,6 @@ decode bytes enc errors =
 -- 'Nothing', splitting will be done at all whitespace substrings. Otherwise,
 -- splits occur at the given separator. Separators are not included in the
 -- resulting list.
--- 
 split
 	:: Unicode
 	-> Maybe Unicode -- ^ Separator
@@ -186,23 +185,21 @@ split s sep maxsplit =
 -- strings. CRLF is considered to be one line break. If the second parameter
 -- is 'False', the line break characters are not included in the resulting
 -- strings.
--- 
 {# fun hscpython_PyUnicode_Splitlines as splitLines
 	{ withObject* `Unicode'
 	, `Bool'
 	} -> `List' stealObject* #}
 
 -- | Translate a string by applying a character mapping table to it.
--- 
+--
 -- The mapping table must map Unicode ordinal integers to Unicode ordinal
 -- integers or @None@ (causing deletion of the character).
--- 
+--
 -- Mapping tables need only provide the @__getitem__()@ interface;
 -- dictionaries and sequences work well. Unmapped character ordinals (ones
 -- which cause a @LookupError@) are left untouched and are copied as-is.
--- 
+--
 -- The error mode has the usual meaning for codecs.
--- 
 {# fun hscpython_PyUnicode_Translate as translate
 	`Object table' =>
 	{ withObject* `Unicode'
@@ -211,7 +208,6 @@ split s sep maxsplit =
 	} -> `Unicode' stealObject* #}
 
 -- | Join a sequence of strings using the given separator.
--- 
 {# fun hscpython_PyUnicode_Join as join
 	`Sequence seq' =>
 	{ withObject* `Unicode'
@@ -223,7 +219,6 @@ data MatchDirection = Prefix | Suffix
 
 -- | Return 'True' if the substring matches @string*[*start:end]@ at the
 -- given tail end (either a 'Prefix' or 'Suffix' match), 'False' otherwise.
--- 
 tailMatch
 	:: Unicode -- ^ String
 	-> Unicode -- ^ Substring
@@ -248,7 +243,6 @@ data FindDirection = Forwards | Backwards
 -- | Return the first position of the substring in @string*[*start:end]@
 -- using the given direction. The return value is the index of the first
 -- match; a value of 'Nothing' indicates that no match was found.
--- 
 find
 	:: Unicode -- ^ String
 	-> Unicode -- ^ Substring
@@ -273,7 +267,6 @@ find str substr start end dir =
 
 -- | Return the number of non-overlapping occurrences of the substring in
 -- @string[start:end]@.
--- 
 count
 	:: Unicode -- ^ String
 	-> Unicode -- ^ Substring
@@ -290,7 +283,6 @@ count str substr start end =
 
 -- | Replace occurrences of the substring with a given replacement. If the
 -- maximum count is 'Nothing', replace all occurences.
--- 
 replace
 	:: Unicode -- ^ String
 	-> Unicode -- ^ Substring
@@ -309,16 +301,14 @@ replace str substr replstr maxcount =
 
 -- | Return a new 'Unicode' object from the given format and args; this is
 -- analogous to @format % args@.
--- 
 {# fun hscpython_PyUnicode_Format as format
 	{ withObject* `Unicode'
 	, withObject* `Tuple'
 	} -> `Unicode' stealObject* #}
 
 -- | Check whether /element/ is contained in a string.
--- 
+--
 -- /element/ has to coerce to a one element string.
--- 
 {# fun hscpython_PyUnicode_Contains as contains
 	`Object element' =>
 	{ withObject* `Unicode'
