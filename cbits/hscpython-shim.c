@@ -41,16 +41,18 @@ static wchar_t *hscpython_wcsdup(wchar_t *s)
 	return new0;
 }
 
-void hscpython_SetProgramName(wchar_t *name)
+void hscpython_SetProgramName(wchar_t *s)
 {
 	free(program_name);
-	program_name = hscpython_wcsdup(name);
+	program_name = hscpython_wcsdup(s);
+	Py_SetProgramName(program_name);
 }
 
-void hscpython_SetPythonHome(wchar_t *home)
+void hscpython_SetPythonHome(wchar_t *s)
 {
 	free(python_home);
-	python_home = hscpython_wcsdup(home);
+	python_home = hscpython_wcsdup(s);
+	Py_SetPythonHome(python_home);
 }
 
 /* Object */

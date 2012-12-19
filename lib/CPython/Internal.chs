@@ -26,8 +26,10 @@ module CPython.Internal
 	, cFromBool
 	, peekText
 	, peekTextW
+	, peekMaybeTextW
 	, withText
 	, withTextW
+	, withMaybeTextW
 	, mapWith
 	
 	-- * Fundamental types
@@ -94,11 +96,17 @@ peekText = fmap T.pack . peekCString
 peekTextW :: CWString -> IO T.Text
 peekTextW = fmap T.pack . peekCWString
 
+peekMaybeTextW :: CWString -> IO (Maybe T.Text)
+peekMaybeTextW = maybePeek peekTextW
+
 withText :: T.Text -> (CString -> IO a) -> IO a
 withText = withCString . T.unpack
 
 withTextW :: T.Text -> (CWString -> IO a) -> IO a
 withTextW = withCWString . T.unpack
+
+withMaybeTextW :: Maybe T.Text -> (CWString -> IO a) -> IO a
+withMaybeTextW = maybeWith withTextW
 
 mapWith :: (a -> (b -> IO c) -> IO c) -> [a] -> ([b] -> IO c) -> IO c
 mapWith with' = step [] where
