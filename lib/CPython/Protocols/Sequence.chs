@@ -1,19 +1,20 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 -- Copyright (C) 2009 John Millikin <jmillikin@gmail.com>
--- 
+--
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
--- 
-{-# LANGUAGE ForeignFunctionInterface #-}
+
 module CPython.Protocols.Sequence
 	( Sequence (..)
 	, SomeSequence
@@ -36,14 +37,16 @@ module CPython.Protocols.Sequence
 	, toTuple
 	, fast
 	) where
-import Prelude hiding (repeat, length)
-import Data.Text (Text)
-import CPython.Internal
-import CPython.Types.ByteArray (ByteArray)
-import CPython.Types.Bytes (Bytes)
-import CPython.Types.Unicode (Unicode)
 
 #include <hscpython-shim.h>
+
+import           Prelude hiding (repeat, length)
+import           Data.Text (Text)
+
+import           CPython.Internal
+import           CPython.Types.ByteArray (ByteArray)
+import           CPython.Types.Bytes (Bytes)
+import           CPython.Types.Unicode (Unicode)
 
 instance Sequence ByteArray where
 	toSequence = unsafeCastToSequence
@@ -62,7 +65,6 @@ instance Sequence Unicode where
 
 -- | Attempt to convert an object to a generic 'Sequence'. If the object does
 -- not implement the sequence protocol, returns 'Nothing'.
--- 
 castToSequence :: Object a => a -> IO (Maybe SomeSequence)
 castToSequence obj =
 	withObject obj $ \objPtr -> do
@@ -155,7 +157,6 @@ castToSequence obj =
 
 -- | Return the first index /i/ for which @self[i] == v@. This is equivalent
 -- to the Python expression @self.index(v)@.
--- 
 {# fun PySequence_Index as index
 	`(Sequence self, Object v)' =>
 	{ withObject* `self'
@@ -164,7 +165,6 @@ castToSequence obj =
 
 -- | Return a list object with the same contents as the arbitrary sequence
 -- /seq/. The returned list is guaranteed to be new.
--- 
 {# fun PySequence_List as toList
 	`Sequence seq' =>
 	{ withObject* `seq'
@@ -172,7 +172,6 @@ castToSequence obj =
 
 -- | Return a tuple object with the same contents as the arbitrary sequence
 -- /seq/. If /seq/ is already a tuple, it is re-used rather than copied.
--- 
 {# fun PySequence_Tuple as toTuple
 	`Sequence seq' =>
 	{ withObject* `seq'
@@ -181,7 +180,6 @@ castToSequence obj =
 -- | Returns the sequence /seq/ as a tuple, unless it is already a tuple or
 -- list, in which case /seq/ is returned. If an error occurs, throws
 -- @TypeError@ with the given text as the exception text.
--- 
 {# fun PySequence_Fast as fast
 	`Sequence seq' =>
 	{ withObject* `seq'

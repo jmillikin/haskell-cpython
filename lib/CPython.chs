@@ -1,19 +1,20 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 -- Copyright (C) 2009 John Millikin <jmillikin@gmail.com>
--- 
+--
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
--- 
-{-# LANGUAGE ForeignFunctionInterface #-}
+
 module CPython
 	( initialize
 	, isInitialized
@@ -35,10 +36,12 @@ module CPython
 	, getPythonHome
 	, setPythonHome
 	) where
-import Data.Text (Text)
-import CPython.Internal
 
 #include <hscpython-shim.h>
+
+import           Data.Text (Text)
+
+import           CPython.Internal
 
 -- | Initialize the Python interpreter. In an application embedding Python,
 -- this should be called before using any other Python/C API computations;
@@ -50,14 +53,12 @@ import CPython.Internal
 -- is a no-op when called for a second time (without calling 'finalize'
 -- first). There is no return value; it is a fatal error if the initialization
 -- fails.
--- 
 {# fun Py_Initialize as initialize
 	{} -> `()' id #}
 
 -- | Return 'True' when the Python interpreter has been initialized, 'False'
 -- if not. After 'finalize' is called, this returns 'False' until
 -- 'initialize' is called again.
--- 
 {# fun Py_IsInitialized as isInitialized
 	{} -> `Bool' #}
 
@@ -68,7 +69,7 @@ import CPython.Internal
 -- Python interpreter. This is a no-op when called for a second time (without
 -- calling 'initialize' again first). There is no return value; errors during
 -- finalization are ignored.
-
+--
 -- This computation is provided for a number of reasons. An embedding
 -- application might want to restart Python without having to restart the
 -- application itself. An application that has loaded the Python interpreter
@@ -76,7 +77,7 @@ import CPython.Internal
 -- allocated by Python before unloading the DLL. During a hunt for memory
 -- leaks in an application a developer might want to free all memory
 -- allocated by Python before exiting from the application.
-
+--
 -- /Bugs and caveats/: The destruction of modules and objects in modules is
 -- done in arbitrary order; this may cause destructors (@__del__()@ methods)
 -- to fail when they depend on other objects (even functions) or modules.
@@ -87,7 +88,6 @@ import CPython.Internal
 -- modules may not be freed. Some extensions may not work properly if their
 -- initialization routine is called more than once; this can happen if an
 -- application calls 'initialize' and 'finalize' more than once.
--- 
 {# fun Py_Finalize as finalize
 	{} -> `()' id #}
 
@@ -102,7 +102,7 @@ newtype ThreadState = ThreadState (Ptr ThreadState)
 -- variable. It has new standard I/O stream file objects @sys.stdin@,
 -- @sys.stdout@ and @sys.stderr@ (however these refer to the same underlying
 -- @FILE@ structures in the C library).
--- 
+--
 -- The return value points to the first thread state created in the new
 -- sub-interpreter. This thread state is made in the current thread state.
 -- Note that no actual thread is created; see the discussion of thread states
@@ -113,7 +113,7 @@ newtype ThreadState = ThreadState (Ptr ThreadState)
 -- held before calling this computation and is still held when it returns;
 -- however, unlike most other Python/C API computations, there
 -- needn&#x2019;t be a current thread state on entry.)
--- 
+--
 -- Extension modules are shared between (sub-)interpreters as follows: the
 -- first time a particular extension is imported, it is initialized normally,
 -- and a (shallow) copy of its module&#x2019;s dictionary is squirreled away.
@@ -124,7 +124,7 @@ newtype ThreadState = ThreadState (Ptr ThreadState)
 -- interpreter has been completely re-initialized by calling 'finalize' and
 -- 'initialize'; in that case, the extension&#x2019;s @init/module/@
 -- procedure is called again.
--- 
+--
 -- /Bugs and caveats/: Because sub-interpreters (and the main interpreter)
 -- are part of the same process, the insulation between them isn&#x2019;t
 -- perfect &#x2014; for example, using low-level file operations like
@@ -140,12 +140,11 @@ newtype ThreadState = ThreadState (Ptr ThreadState)
 -- sub-interpreters, since import operations executed by such objects may
 -- affect the wrong (sub-)interpreter&#x2019;s dictionary of loaded modules.
 -- (XXX This is a hard-to-fix bug that will be addressed in a future release.)
--- 
+--
 -- Also note that the use of this functionality is incompatible with
 -- extension modules such as PyObjC and ctypes that use the @PyGILState_*()@
 -- APIs (and this is inherent in the way the @PyGILState_*()@ procedures
 -- work). Simple things may work, but confusing behavior will always be near.
--- 
 newInterpreter :: IO (Maybe ThreadState)
 newInterpreter = do
 	ptr <- {# call Py_NewInterpreter as ^ #}
@@ -161,13 +160,11 @@ newInterpreter = do
 -- before calling this computation and is still held when it returns.)
 -- 'finalize' will destroy all sub-interpreters that haven&#x2019;t been
 -- explicitly destroyed at that point.
--- 
 endInterpreter :: ThreadState -> IO ()
 endInterpreter (ThreadState ptr) =
 	{# call Py_EndInterpreter as ^ #} $ castPtr ptr
 
 -- | Return the program name set with 'setProgramName', or the default.
--- 
 getProgramName :: IO Text
 getProgramName = pyGetProgramName >>= peekTextW
 
@@ -181,7 +178,6 @@ foreign import ccall safe "hscpython-shim.h Py_GetProgramName"
 -- run-time libraries relative to the interpreter executable. The default
 -- value is @\"python\"@. No code in the Python interpreter will change the
 -- program name.
--- 
 setProgramName :: Text -> IO ()
 setProgramName name = withTextW name cSetProgramName
 
@@ -196,7 +192,6 @@ foreign import ccall safe "hscpython-shim.h hscpython_SetProgramName"
 -- top-level Makefile and the /--prefix/ argument to the @configure@ script
 -- at build time. The value is available to Python code as @sys.prefix@. It
 -- is only useful on UNIX. See also 'getExecPrefix'.
--- 
 getPrefix :: IO Text
 getPrefix = pyGetPrefix >>= peekTextW
 
@@ -211,13 +206,13 @@ foreign import ccall safe "hscpython-shim.h Py_GetPrefix"
 -- top-level Makefile and the /--exec-prefix/ argument to the @configure@
 -- script at build time. The value is available to Python code as
 -- @sys.exec_prefix@. It is only useful on UNIX.
--- 
+--
 -- Background: The exec-prefix differs from the prefix when platform
 -- dependent files (such as executables and shared libraries) are installed
 -- in a different directory tree. In a typical installation, platform
 -- dependent files may be installed in the @\/usr\/local\/plat@ subtree while
 -- platform independent may be installed in @\/usr\/local@.
--- 
+--
 -- Generally speaking, a platform is a combination of hardware and software
 -- families, e.g. Sparc machines running the Solaris 2.x operating system
 -- are considered the same platform, but Intel machines running Solaris
@@ -229,11 +224,10 @@ foreign import ccall safe "hscpython-shim.h Py_GetPrefix"
 -- empty string. Note that compiled Python bytecode files are platform
 -- independent (but not independent from the Python version by which they
 -- were compiled!).
--- 
+--
 -- System administrators will know how to configure the @mount@ or @automount@
 -- programs to share @\/usr\/local@ between platforms while having
 -- @\/usr\/local\/plat@ be a different filesystem for each platform.
--- 
 getExecPrefix :: IO Text
 getExecPrefix = pyGetExecPrefix >>= peekTextW
 
@@ -244,7 +238,6 @@ foreign import ccall safe "hscpython-shim.h Py_GetExecPrefix"
 -- as a side-effect of deriving the default module search path from the
 -- program name (set by 'setProgramName' above). The value is available to
 -- Python code as @sys.executable@.
--- 
 getProgramFullPath :: IO Text
 getProgramFullPath = pyGetProgramFullPath >>= peekTextW
 
@@ -258,7 +251,6 @@ foreign import ccall safe "hscpython-shim.h Py_GetProgramFullPath"
 -- character is @\':\'@ on Unix and Mac OS X, @\';\'@ on Windows. The value
 -- is available to Python code as the list @sys.path@, which may be modified
 -- to change the future search path for loaded modules.
--- 
 getPath :: IO Text
 getPath = pyGetPath >>= peekTextW
 
@@ -267,16 +259,15 @@ foreign import ccall safe "hscpython-shim.h Py_GetPath"
 
 -- | Return the version of this Python interpreter. This is a string that
 -- looks something like
--- 
+--
 -- @
 --  \"3.0a5+ (py3k:63103M, May 12 2008, 00:53:55) \\n[GCC 4.2.3]\"
 -- @
--- 
+--
 -- The first word (up to the first space character) is the current Python
 -- version; the first three characters are the major and minor version
 -- separated by a period. The value is available to Python code as
 -- @sys.version@.
--- 
 {# fun Py_GetVersion as getVersion
 	{} -> `Text' peekText* #}
 
@@ -286,45 +277,41 @@ foreign import ccall safe "hscpython-shim.h Py_GetPath"
 -- Solaris 2.x, which is also known as SunOS 5.x, the value is @\"sunos5\"@.
 -- On Mac OS X, it is @\"darwin\"@. On Windows, it is @\"win\"@. The value
 -- is available to Python code as @sys.platform@.
--- 
 {# fun Py_GetPlatform as getPlatform
 	{} -> `Text' peekText* #}
 
 -- | Return the official copyright string for the current Python version,
 -- for example
--- 
+--
 -- @
 --  \"Copyright 1991-1995 Stichting Mathematisch Centrum, Amsterdam\"
 -- @
--- 
+--
 -- The value is available to Python code as @sys.copyright@.
--- 
 {# fun Py_GetCopyright as getCopyright
 	{} -> `Text' peekText* #}
 
 -- | Return an indication of the compiler used to build the current Python
 -- version, in square brackets, for example:
--- 
+--
 -- @
 --  \"[GCC 2.7.2.2]\"
 -- @
--- 
+--
 -- The value is available to Python code as part of the variable
 -- @sys.version@.
--- 
 {# fun Py_GetCompiler as getCompiler
 	{} -> `Text' peekText* #}
 
 -- | Return information about the sequence number and build date and time of
 -- the current Python interpreter instance, for example
--- 
+--
 -- @
 --  \"#67, Aug  1 1997, 22:34:28\"
 -- @
--- 
+--
 -- The value is available to Python code as part of the variable
 -- @sys.version@.
--- 
 {# fun Py_GetBuildInfo as getBuildInfo
 	{} -> `Text' peekText* #}
 
@@ -334,11 +321,10 @@ foreign import ccall safe "hscpython-shim.h Py_GetPath"
 -- interpreter. If there isn&#x2019;t a script that will be run, the first
 -- parameter can be an empty string. If this function fails to initialize
 -- @sys.argv@, a fatal condition is signalled using @Py_FatalError()@.
--- 
+--
 -- This function also prepends the executed script&#x2019;s path to
 -- @sys.path@. If no script is executed (in the case of calling @python -c@
 -- or just the interactive interpreter), the empty string is used instead.
--- 
 setArgv :: Text -> [Text] -> IO ()
 setArgv argv0 argv =
 	mapWith withTextW (argv0 : argv) $ \textPtrs ->
@@ -351,7 +337,6 @@ foreign import ccall safe "hscpython-shim.h PySys_SetArgv"
 -- | Return the default &#x201c;home&#x201d;, that is, the value set by a
 -- previous call to 'setPythonHome', or the value of the @PYTHONHOME@
 -- environment variable if it is set.
--- 
 getPythonHome :: IO Text
 getPythonHome = pyGetPythonHome >>= peekTextW
 
@@ -362,7 +347,6 @@ foreign import ccall safe "hscpython-shim.h Py_GetPythonHome"
 -- of the standard Python libraries. The libraries are searched in
 -- @/home/\/lib\//python version/@ and @/home/\/lib\//python version/@. No
 -- code in the Python interpreter will change the Python home.
--- 
 setPythonHome :: Text -> IO ()
 setPythonHome name = withTextW name cSetPythonHome
 

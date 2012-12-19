@@ -1,19 +1,20 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 -- Copyright (C) 2009 John Millikin <jmillikin@gmail.com>
--- 
+--
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
--- 
-{-# LANGUAGE ForeignFunctionInterface #-}
+
 module CPython.Types.WeakReference
 	( Reference
 	, Proxy
@@ -21,9 +22,10 @@ module CPython.Types.WeakReference
 	, newProxy
 	, getObject
 	) where
-import CPython.Internal
 
 #include <hscpython-shim.h>
+
+import           CPython.Internal
 
 newtype Reference = Reference (ForeignPtr Reference)
 instance Object Reference where
@@ -42,7 +44,6 @@ instance Object Proxy where
 -- collected; it should accept a single parameter, which will be the weak
 -- reference object itself. If ob is not a weakly-referencable object, or if
 -- /callback/ is not callable, this will throw a @TypeError@.
--- 
 newReference :: (Object obj, Object callback) => obj -> Maybe callback -> IO Reference
 newReference obj cb =
 	withObject obj $ \objPtr ->
@@ -57,7 +58,6 @@ newReference obj cb =
 -- should accept a single parameter, which will be the weak reference object
 -- itself. If ob is not a weakly-referencable object, or if /callback/ is not
 -- callable, this will throw a @TypeError@.
--- 
 newProxy :: (Object obj, Object callback) => obj -> Maybe callback -> IO Proxy
 newProxy obj cb =
 	withObject obj $ \objPtr ->
@@ -67,7 +67,6 @@ newProxy obj cb =
 
 -- | Return the referenced object from a weak reference. If the referent is
 -- no longer live, returns @None@.
--- 
 {# fun PyWeakref_GetObject as getObject
 	{ withObject* `Reference'
 	} -> `SomeObject' peekObject* #}

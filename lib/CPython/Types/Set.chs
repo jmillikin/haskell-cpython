@@ -1,26 +1,25 @@
+{-# LANGUAGE ForeignFunctionInterface #-}
+
 -- Copyright (C) 2009 John Millikin <jmillikin@gmail.com>
--- 
+--
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
 -- the Free Software Foundation, either version 3 of the License, or
 -- any later version.
--- 
+--
 -- This program is distributed in the hope that it will be useful,
 -- but WITHOUT ANY WARRANTY; without even the implied warranty of
 -- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 -- GNU General Public License for more details.
--- 
+--
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
--- 
-{-# LANGUAGE ForeignFunctionInterface #-}
 
 -- | Any functionality not listed below is best accessed using the either
 -- the 'Object' protocol (including 'callMethod', 'richCompare', 'hash',
 -- 'repr', 'isTrue', and 'getIter') or the 'Number' protocol (including 'and',
 -- 'subtract', 'or', 'xor', 'inPlaceAnd', 'inPlaceSubtract', 'inPlaceOr',
 -- and 'inPlaceXor').
--- 
 module CPython.Types.Set
 	( AnySet
 	, Set
@@ -39,10 +38,11 @@ module CPython.Types.Set
 	, pop
 	, clear
 	) where
-import CPython.Internal
-import CPython.Types.Tuple (toTuple, iterableToTuple, fromTuple)
 
 #include <hscpython-shim.h>
+
+import           CPython.Internal
+import           CPython.Types.Tuple (toTuple, iterableToTuple, fromTuple)
 
 class Object a => AnySet a
 
@@ -82,7 +82,6 @@ toFrozenSet xs = toTuple xs >>= iterableToFrozenSet
 -- | Return a new 'Set' from the contents of an iterable 'Object'. The object
 -- may be 'Nothing' to create an empty set. Throws a @TypeError@ if the object
 -- is not iterable.
--- 
 {# fun PySet_New as iterableToSet
 	`Object obj' =>
 	{ withObject* `obj'
@@ -91,7 +90,6 @@ toFrozenSet xs = toTuple xs >>= iterableToFrozenSet
 -- | Return a new 'FrozenSet' from the contents of an iterable 'Object'. The
 -- object may be 'Nothing' to create an empty frozen set. Throws a @TypeError@
 -- if the object is not iterable.
--- 
 {# fun PyFrozenSet_New as iterableToFrozenSet
 	`Object obj' =>
 	{ withObject* `obj'
@@ -101,7 +99,6 @@ fromSet :: AnySet set => set -> IO [SomeObject]
 fromSet set = iterableToTuple set >>= fromTuple
 
 -- | Return the size of a 'Set' or 'FrozenSet'.
--- 
 {# fun PySet_Size as size
 	`AnySet set' =>
 	{ withObject* `set'
@@ -111,7 +108,6 @@ fromSet set = iterableToTuple set >>= fromTuple
 -- @__contains__()@ method, this computation does not automatically convert
 -- unhashable 'Set's into temporary 'FrozenSet's. Throws a @TypeError@ if the
 -- key is unhashable.
--- 
 {# fun PySet_Contains as contains
 	`(AnySet set, Object key)' =>
 	{ withObject* `set'
@@ -123,7 +119,6 @@ fromSet set = iterableToTuple set >>= fromTuple
 -- brand new 'FrozenSet's before they are exposed to other code). Throws a
 -- @TypeError@ if the key is unhashable. Throws a @MemoryError@ if there is
 -- no room to grow.
--- 
 {# fun PySet_Add as add
 	`(AnySet set, Object key)' =>
 	{ withObject* `set'
@@ -135,7 +130,6 @@ fromSet set = iterableToTuple set >>= fromTuple
 -- if /key/ is unhashable. Unlike the Python @discard()@ method, this
 -- computation does not automatically convert unhashable sets into temporary
 -- 'FrozenSet's.
--- 
 {# fun PySet_Discard as discard
 	`Object key' =>
 	{ withObject* `Set'
@@ -144,13 +138,11 @@ fromSet set = iterableToTuple set >>= fromTuple
 
 -- | Return an arbitrary object in the set, and removes the object from the
 -- set. Throws @KeyError@ if the set is empty.
--- 
 {# fun PySet_Pop as pop
 	{ withObject* `Set'
 	} -> `SomeObject' stealObject* #}
 
 -- | Remove all elements from a set.
--- 
 {# fun PySet_Clear as clear
 	{ withObject* `Set'
 	} -> `()' checkStatusCode* #}
