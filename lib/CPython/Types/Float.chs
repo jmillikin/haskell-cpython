@@ -37,7 +37,7 @@ instance Object Float where
 instance Concrete Float where
 	concreteType _ = floatType
 
-{# fun pure hscpython_PyFloat_Type as floatType
+{# fun pure unsafe hscpython_PyFloat_Type as floatType
 	{} -> `Type' peekStaticObject* #}
 
 {# fun PyFloat_FromDouble as toFloat

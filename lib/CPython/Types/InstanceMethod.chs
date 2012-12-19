@@ -35,7 +35,7 @@ instance Object InstanceMethod where
 instance Concrete InstanceMethod where
 	concreteType _ = instanceMethodType
 
-{# fun pure hscpython_PyInstanceMethod_Type as instanceMethodType
+{# fun pure unsafe hscpython_PyInstanceMethod_Type as instanceMethodType
 	{} -> `Type' peekStaticObject* #}
 
 {# fun PyInstanceMethod_New as new

@@ -47,7 +47,7 @@ instance Object Capsule where
 instance Concrete Capsule where
 	concreteType _ = capsuleType
 
-{# fun pure hscpython_PyCapsule_Type as capsuleType
+{# fun pure unsafe hscpython_PyCapsule_Type as capsuleType
 	{} -> `Type' peekStaticObject* #}
 
 -- new :: Ptr () -> Maybe Text -> Destructor -> IO Capsule

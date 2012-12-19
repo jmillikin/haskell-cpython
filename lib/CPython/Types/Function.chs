@@ -45,7 +45,7 @@ instance Object Function where
 instance Concrete Function where
 	concreteType _ = functionType
 
-{# fun pure hscpython_PyFunction_Type as functionType
+{# fun pure unsafe hscpython_PyFunction_Type as functionType
 	{} -> `Type' peekStaticObject* #}
 
 -- | Return a new function associated with the given code object. The second

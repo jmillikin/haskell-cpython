@@ -37,7 +37,7 @@ instance Object Slice where
 instance Concrete Slice where
 	concreteType _ = sliceType
 
-{# fun pure hscpython_PySlice_Type as sliceType
+{# fun pure unsafe hscpython_PySlice_Type as sliceType
 	{} -> `Type' peekStaticObject* #}
 
 -- | Return a new slice object with the given values. The /start/, /stop/,

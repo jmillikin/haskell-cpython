@@ -28,7 +28,7 @@ import           CPython.Internal
 instance Concrete Type where
 	concreteType _ = typeType
 
-{# fun pure hscpython_PyType_Type as typeType
+{# fun pure unsafe hscpython_PyType_Type as typeType
 	{} -> `Type' peekStaticObject* #}
 
 -- | Returns 'True' if the first parameter is a subtype of the second

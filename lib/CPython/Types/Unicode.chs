@@ -83,7 +83,7 @@ withErrors errors = withCString $ case errors of
 	Replace -> "replace"
 	Ignore -> "ignore"
 
-{# fun pure hscpython_PyUnicode_Type as unicodeType
+{# fun pure unsafe hscpython_PyUnicode_Type as unicodeType
 	{} -> `Type' peekStaticObject* #}
 
 toUnicode :: T.Text -> IO Unicode

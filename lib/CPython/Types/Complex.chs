@@ -37,7 +37,7 @@ instance Object Complex where
 instance Concrete Complex where
 	concreteType _ = complexType
 
-{# fun pure hscpython_PyComplex_Type as complexType
+{# fun pure unsafe hscpython_PyComplex_Type as complexType
 	{} -> `Type' peekStaticObject* #}
 
 toComplex :: C.Complex Double -> IO Complex
