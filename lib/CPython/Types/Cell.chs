@@ -36,7 +36,7 @@ instance Object Cell where
 instance Concrete Cell where
 	concreteType _ = cellType
 
-{# fun pure hscpython_PyCell_Type as cellType
+{# fun pure unsafe hscpython_PyCell_Type as cellType
 	{} -> `Type' peekStaticObject* #}
 
 -- | Create and return a new cell containing the value /obj/.

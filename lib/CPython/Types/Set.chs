@@ -67,10 +67,10 @@ instance Concrete FrozenSet where
 instance AnySet Set
 instance AnySet FrozenSet
 
-{# fun pure hscpython_PySet_Type as setType
+{# fun pure unsafe hscpython_PySet_Type as setType
 	{} -> `Type' peekStaticObject* #}
 
-{# fun pure hscpython_PyFrozenSet_Type as frozenSetType
+{# fun pure unsafe hscpython_PyFrozenSet_Type as frozenSetType
 	{} -> `Type' peekStaticObject* #}
 
 toSet :: [SomeObject] -> IO Set

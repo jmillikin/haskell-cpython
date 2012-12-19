@@ -33,5 +33,5 @@ instance Object Code where
 instance Concrete Code where
 	concreteType _ = codeType
 
-{# fun pure hscpython_PyCode_Type as codeType
+{# fun pure unsafe hscpython_PyCode_Type as codeType
 	{} -> `Type' peekStaticObject* #}

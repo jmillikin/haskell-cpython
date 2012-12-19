@@ -53,10 +53,10 @@ instance Object CallableIterator where
 instance Concrete CallableIterator where
 	concreteType _ = callableIteratorType
 
-{# fun pure hscpython_PySeqIter_Type as sequenceIteratorType
+{# fun pure unsafe hscpython_PySeqIter_Type as sequenceIteratorType
 	{} -> `Type' peekStaticObject* #}
 
-{# fun pure hscpython_PyCallIter_Type as callableIteratorType
+{# fun pure unsafe hscpython_PyCallIter_Type as callableIteratorType
 	{} -> `Type' peekStaticObject* #}
 
 -- | Return an 'Iterator' that works with a general sequence object, /seq/.

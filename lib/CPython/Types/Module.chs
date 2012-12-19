@@ -48,7 +48,7 @@ instance Object Module where
 instance Concrete Module where
 	concreteType _ = moduleType
 
-{# fun pure hscpython_PyModule_Type as moduleType
+{# fun pure unsafe hscpython_PyModule_Type as moduleType
 	{} -> `Type' peekStaticObject* #}
 
 -- | Return a new module object with the @__name__@ attribute set. Only the

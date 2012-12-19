@@ -41,7 +41,7 @@ instance Object Integer where
 instance Concrete Integer where
 	concreteType _ = integerType
 
-{# fun pure hscpython_PyLong_Type as integerType
+{# fun pure unsafe hscpython_PyLong_Type as integerType
 	{} -> `Type' peekStaticObject* #}
 
 toInteger :: Prelude.Integer -> IO Integer

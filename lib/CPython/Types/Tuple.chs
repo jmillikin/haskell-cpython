@@ -36,7 +36,7 @@ import           CPython.Internal hiding (new)
 instance Concrete Tuple where
 	concreteType _ = tupleType
 
-{# fun pure hscpython_PyTuple_Type as tupleType
+{# fun pure unsafe hscpython_PyTuple_Type as tupleType
 	{} -> `Type' peekStaticObject* #}
 
 toTuple :: [SomeObject] -> IO Tuple

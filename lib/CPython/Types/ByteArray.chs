@@ -43,7 +43,7 @@ instance Object ByteArray where
 instance Concrete ByteArray where
 	concreteType _ = byteArrayType
 
-{# fun pure hscpython_PyByteArray_Type as byteArrayType
+{# fun pure unsafe hscpython_PyByteArray_Type as byteArrayType
 	{} -> `Type' peekStaticObject* #}
 
 toByteArray :: B.ByteString -> IO ByteArray

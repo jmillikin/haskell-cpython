@@ -29,24 +29,24 @@ module CPython.Constants
 import           CPython.Internal
 
 -- | The Python @None@ object, denoting lack of value.
-{# fun hscpython_Py_None as none
+{# fun unsafe hscpython_Py_None as none
 	{} -> `SomeObject' peekObject* #}
 
 -- | The Python @True@ object.
-{# fun hscpython_Py_True as true
+{# fun unsafe hscpython_Py_True as true
 	{} -> `SomeObject' peekObject* #}
 
 -- | The Python @False@ object.
-{# fun hscpython_Py_False as false
+{# fun unsafe hscpython_Py_False as false
 	{} -> `SomeObject' peekObject* #}
 
-{# fun pure hscpython_Py_None as rawNone
+{# fun pure unsafe hscpython_Py_None as rawNone
 	{} -> `Ptr ()' id #}
 
-{# fun pure hscpython_Py_True as rawTrue
+{# fun pure unsafe hscpython_Py_True as rawTrue
 	{} -> `Ptr ()' id #}
 
-{# fun pure hscpython_Py_False as rawFalse
+{# fun pure unsafe hscpython_Py_False as rawFalse
 	{} -> `Ptr ()' id #}
 
 isNone :: SomeObject -> IO Bool

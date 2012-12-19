@@ -43,7 +43,7 @@ import qualified CPython.Types.Tuple as T
 instance Concrete List where
 	concreteType _ = listType
 
-{# fun pure hscpython_PyList_Type as listType
+{# fun pure unsafe hscpython_PyList_Type as listType
 	{} -> `Type' peekStaticObject* #}
 
 toList :: [SomeObject] -> IO List

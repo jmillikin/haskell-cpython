@@ -42,7 +42,7 @@ instance Object Bytes where
 instance Concrete Bytes where
 	concreteType _ = bytesType
 
-{# fun pure hscpython_PyBytes_Type as bytesType
+{# fun pure unsafe hscpython_PyBytes_Type as bytesType
 	{} -> `Type' peekStaticObject* #}
 
 toBytes :: B.ByteString -> IO Bytes

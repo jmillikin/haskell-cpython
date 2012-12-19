@@ -41,7 +41,7 @@ import           CPython.Internal hiding (new)
 instance Concrete Dictionary where
 	concreteType _ = dictionaryType
 
-{# fun pure hscpython_PyDict_Type as dictionaryType
+{# fun pure unsafe hscpython_PyDict_Type as dictionaryType
 	{} -> `Type' peekStaticObject* #}
 
 {# fun PyDict_New as new
